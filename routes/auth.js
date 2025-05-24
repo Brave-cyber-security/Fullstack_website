@@ -43,19 +43,7 @@ export const isMaster = async (req, res, next) => {
   }
 }
 
-// Add GET routes for login and signup pages at the beginning of the file, after the middleware definitions
-
-// GET route for login page
-router.get("/login", (req, res) => {
-  res.render("auth/login")
-})
-
-// GET route for signup page
-router.get("/signup", (req, res) => {
-  res.render("auth/signup")
-})
-
-// Register route
+// Register route (POST only - GET is handled in app.js)
 router.post("/signup", async (req, res) => {
   try {
     const {
@@ -133,7 +121,7 @@ router.post("/signup", async (req, res) => {
   }
 })
 
-// Login route
+// Login route (POST only - GET is handled in app.js)
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body
@@ -191,17 +179,6 @@ router.post("/login", async (req, res) => {
       email: req.body.email,
     })
   }
-})
-
-// Logout route
-router.get("/logout", (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      console.error("Logout error:", err)
-      return res.status(500).render("error", { error: "Logout failed" })
-    }
-    res.redirect("/")
-  })
 })
 
 export const authRoutes = router

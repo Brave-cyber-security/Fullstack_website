@@ -114,16 +114,18 @@ app.use((req, res, next) => {
   next()
 })
 
-// Routes
-app.use("/", authRoutes) // This handles /login, /signup, /logout
-app.use("/admin", adminRoutes)
-app.use("/knowledge", knowledgeBaseRoutes)
-app.use("/master", masterRoutes)
-app.use("/customer", customerRoutes)
-
-// Main routes
+// Main routes (must come before other routes)
 app.get("/", (req, res) => {
   res.render("index")
+})
+
+// Authentication routes (login/signup pages and form submissions)
+app.get("/login", (req, res) => {
+  res.render("auth/login")
+})
+
+app.get("/signup", (req, res) => {
+  res.render("auth/signup")
 })
 
 app.get("/logout", (req, res) => {
@@ -133,16 +135,6 @@ app.get("/logout", (req, res) => {
       return res.status(500).render("error", { error: "Logout failed" })
     }
     res.redirect("/")
-  })
-})
-
-// Customer routes placeholder
-app.get("/customer/dashboard", (req, res) => {
-  if (!req.session.user) {
-    return res.redirect("/login")
-  }
-  res.render("customer/dashboard", {
-    supportRequests: [], // This will be populated from the database
   })
 })
 
@@ -156,12 +148,28 @@ app.get("/seed", async (req, res) => {
     // Import and run seed function
     const { execSync } = await import("child_process")
     execSync("node seed/seed.js", { stdio: "inherit" })
-    res.send("Database seeded successfully! <a href='/'>Go to homepage</a>")
+    res.send(`
+      <h1>Database seeded successfully!</h1>
+      <p>Test accounts created:</p>
+      <ul>
+        <li><strong>Master:</strong> master@dern-support.com / master123</li>
+        <li><strong>Admin:</strong> admin@dern-support.com / admin123</li>
+        <li><strong>Customer:</strong> customer@example.com / customer123</li>
+      </ul>
+      <a href="/">Go to homepage</a>
+    `)
   } catch (error) {
     console.error("Seed error:", error)
     res.status(500).send(`Seeding failed: ${error.message}`)
   }
 })
+
+// Mount route modules
+app.use("/", authRoutes) // This handles POST /login, POST /signup
+app.use("/admin", adminRoutes)
+app.use("/knowledge", knowledgeBaseRoutes)
+app.use("/master", masterRoutes)
+app.use("/customer", customerRoutes)
 
 // 404 handler
 app.use((req, res) => {

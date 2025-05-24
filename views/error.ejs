@@ -9,14 +9,17 @@
 <body>
   <%- include('partials/header') %>
   
-  <main class="error-page">
+  <main class="error-page section">
     <div class="container">
-      <div class="error-container">
-        <h1>Oops! Something went wrong</h1>
-        <p><%= error %></p>
+      <div class="error-content text-center">
+        <h1 class="error-code">Error</h1>
+        <h2 class="error-title">Something went wrong</h2>
+        <p class="error-message">
+          <%= error || 'An unexpected error occurred. Please try again later.' %>
+        </p>
         <div class="error-actions">
-          <a href="/" class="btn btn-primary">Go to Homepage</a>
-          <a href="javascript:history.back()" class="btn btn-secondary">Go Back</a>
+          <a href="/" class="btn btn-primary">Go Home</a>
+          <button onclick="history.back()" class="btn btn-outline-primary">Go Back</button>
         </div>
       </div>
     </div>

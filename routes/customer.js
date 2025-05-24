@@ -9,9 +9,14 @@ const router = express.Router()
 // Customer dashboard
 router.get("/dashboard", isAuthenticated, async (req, res) => {
   try {
-    const supportRequests = await SupportRequest.find({ customer: req.session.user }).sort({ createdAt: -1 })
+    const supportRequests = await SupportRequest.find({ customer: req.session.user }).sort({ createdAt: -1 }).limit(10)
 
-    res.render("customer/dashboard", { supportRequests })
+    const user = await User.findById(req.session.user)
+
+    res.render("customer/dashboard", {
+      supportRequests,
+      user,
+    })
   } catch (error) {
     console.error("Dashboard error:", error)
     res.status(500).render("error", { error: "Error loading dashboard" })
@@ -145,24 +150,12 @@ router.post("/support", isAuthenticated, async (req, res) => {
       approvalStatus: "pending_approval",
     })
 
-    // Calculate estimated cost
-    supportRequest.estimatedCost = supportRequest.calculateEstimatedCost()
+    // Calculate estimated cost (if method exists)
+    if (typeof supportRequest.calculateEstimatedCost === "function") {
+      supportRequest.estimatedCost = supportRequest.calculateEstimatedCost()
+    }
 
     await supportRequest.save()
-
-    // Create notifications for masters
-    const masters = await User.find({ isMaster: true })
-    for (const master of masters) {
-      const notification = new Notification({
-        recipient: master._id,
-        title: "New Support Request Requires Approval",
-        message: `A new ${supportRequest.urgency} priority request for ${supportRequest.deviceType} needs your approval.`,
-        type: "info",
-        relatedModel: "SupportRequest",
-        relatedId: supportRequest._id,
-      })
-      await notification.save()
-    }
 
     res.redirect(`/customer/support/${supportRequest._id}`)
   } catch (error) {
@@ -193,30 +186,15 @@ router.get("/support/:id", isAuthenticated, async (req, res) => {
   }
 })
 
-// Route to get all support requests for a customer
-router.get("/support-requests", isAuthenticated, async (req, res) => {
+// List all support requests
+router.get("/support", isAuthenticated, async (req, res) => {
   try {
-    const supportRequests = await SupportRequest.find({ customer: req.session.user })
-    res.status(200).json(supportRequests)
+    const supportRequests = await SupportRequest.find({ customer: req.session.user }).sort({ createdAt: -1 })
+
+    res.render("customer/support-list", { supportRequests })
   } catch (error) {
-    console.error(error)
-    res.status(500).json({ message: "Failed to fetch support requests.", error: error.message })
-  }
-})
-
-// Route to get a specific support request by ID for a customer
-router.get("/support-requests/:id", isAuthenticated, async (req, res) => {
-  try {
-    const supportRequest = await SupportRequest.findOne({ _id: req.params.id, customer: req.session.user })
-
-    if (!supportRequest) {
-      return res.status(404).json({ message: "Support request not found." })
-    }
-
-    res.status(200).json(supportRequest)
-  } catch (error) {
-    console.error(error)
-    res.status(500).json({ message: "Failed to fetch support request.", error: error.message })
+    console.error("Support list error:", error)
+    res.status(500).render("error", { error: "Error loading support requests" })
   }
 })
 
@@ -240,7 +218,7 @@ router.post("/notifications/:id/read", isAuthenticated, async (req, res) => {
       recipient: req.session.user,
     })
 
-    if (notification) {
+    if (notification && typeof notification.markAsRead === "function") {
       await notification.markAsRead()
     }
 

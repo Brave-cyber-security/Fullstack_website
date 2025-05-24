@@ -3,141 +3,100 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dern-Support - Professional Technical Support Services</title>
+  <title>Dern-Support - Professional IT Support Services</title>
   <link rel="stylesheet" href="/css/styles.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-
 <body>
   <%- include('partials/header') %>
   
-  <main class="landing-page">
+  <main>
+    <!-- Hero Section -->
     <section class="hero">
       <div class="container">
         <div class="hero-content">
-          <div class="hero-text">
-            <h1>Professional Technical Support When You Need It Most</h1>
-            <p>Dern-Support provides expert technical solutions for all your devices and systems. Fast, reliable, and affordable support for businesses and individuals.</p>
-            <div class="cta-buttons">
-              <a href="/signup" class="btn btn-accent btn-lg">Get Started</a>
-              <a href="#services" class="btn btn-outline-primary btn-lg">Explore Services</a>
-            </div>
-          </div>
-          <div class="hero-image">
-            <img src="https://images.pexels.com/photos/3183153/pexels-photo-3183153.jpeg" alt="IT Support Specialist helping a client">
+          <h1 class="hero-title">Professional IT Support Services</h1>
+          <p class="hero-subtitle">
+            Get expert technical support for all your devices and systems. 
+            Fast, reliable, and professional service you can trust.
+          </p>
+          <div class="hero-actions">
+            <% if (currentUser) { %>
+              <a href="/customer/support/new" class="btn btn-primary btn-lg">Request Support</a>
+              <a href="/customer/dashboard" class="btn btn-outline-primary btn-lg">My Dashboard</a>
+            <% } else { %>
+              <a href="/signup" class="btn btn-primary btn-lg">Get Started</a>
+              <a href="/login" class="btn btn-outline-primary btn-lg">Login</a>
+            <% } %>
           </div>
         </div>
       </div>
     </section>
-    
+
+    <!-- Services Section -->
     <section id="services" class="services section">
       <div class="container">
-        <div class="section-header">
-          <h2>Our Expert Services</h2>
-          <p>We offer comprehensive technical support solutions to keep your technology running smoothly</p>
-        </div>
-        
-        <div class="service-grid">
+        <h2 class="section-title text-center">Our Services</h2>
+        <div class="services-grid">
           <div class="service-card">
-            <div class="service-icon">
-              <i class="fas fa-desktop fa-2x" style="color: white;"></i>
-            </div>
+            <div class="service-icon">💻</div>
             <h3>Computer Repair</h3>
-            <p>Expert diagnosis and repair for desktop and laptop computers. Hardware upgrades, virus removal, and system optimization.</p>
+            <p>Desktop and laptop repair services for hardware and software issues.</p>
           </div>
-          
           <div class="service-card">
-            <div class="service-icon">
-              <i class="fas fa-network-wired fa-2x" style="color: white;"></i>
-            </div>
-            <h3>Network Support</h3>
-            <p>Setup, troubleshooting, and optimization for home and business networks. Wi-Fi solutions, security implementation, and performance tuning.</p>
+            <div class="service-icon">📱</div>
+            <h3>Mobile Support</h3>
+            <p>Smartphone and tablet troubleshooting and repair services.</p>
           </div>
-          
           <div class="service-card">
-            <div class="service-icon">
-              <i class="fas fa-mobile-alt fa-2x" style="color: white;"></i>
-            </div>
-            <h3>Mobile Device Repair</h3>
-            <p>Screen replacement, battery service, and data recovery for smartphones and tablets. Fast turnaround and quality parts.</p>
+            <div class="service-icon">🌐</div>
+            <h3>Network Setup</h3>
+            <p>Network configuration, security setup, and connectivity solutions.</p>
           </div>
-          
           <div class="service-card">
-            <div class="service-icon">
-              <i class="fas fa-server fa-2x" style="color: white;"></i>
-            </div>
-            <h3>Business IT Support</h3>
-            <p>Comprehensive IT solutions for businesses of all sizes. Managed services, cloud solutions, and strategic technology planning.</p>
+            <div class="service-icon">🔧</div>
+            <h3>System Maintenance</h3>
+            <p>Regular maintenance and optimization for peak performance.</p>
           </div>
         </div>
       </div>
     </section>
-    
-    <section class="how-it-works section">
+
+    <!-- Features Section -->
+    <section class="features section bg-light">
       <div class="container">
-        <div class="section-header">
-          <h2>How It Works</h2>
-          <p>Getting technical support has never been easier</p>
-        </div>
-        
-        <div class="steps">
-          <div class="step">
-            <div class="step-number">1</div>
-            <h3>Submit a Request</h3>
-            <p>Describe your technical issue and select the urgency level through our easy-to-use portal.</p>
+        <h2 class="section-title text-center">Why Choose Dern-Support?</h2>
+        <div class="features-grid">
+          <div class="feature">
+            <h3>24/7 Support</h3>
+            <p>Round-the-clock technical support when you need it most.</p>
           </div>
-          
-          <div class="step">
-            <div class="step-number">2</div>
-            <h3>Get a Quote</h3>
-            <p>Receive an instant cost estimate based on your issue type and urgency requirements.</p>
+          <div class="feature">
+            <h3>Expert Technicians</h3>
+            <p>Certified professionals with years of experience.</p>
           </div>
-          
-          <div class="step">
-            <div class="step-number">3</div>
-            <h3>Schedule Service</h3>
-            <p>Choose a convenient time for our certified technician to assist you remotely or on-site.</p>
+          <div class="feature">
+            <h3>Fast Response</h3>
+            <p>Quick response times to minimize downtime.</p>
           </div>
-          
-          <div class="step">
-            <div class="step-number">4</div>
-            <h3>Problem Solved</h3>
-            <p>Our expert technicians will resolve your issue quickly and efficiently with a satisfaction guarantee.</p>
+          <div class="feature">
+            <h3>Transparent Pricing</h3>
+            <p>Clear, upfront pricing with no hidden fees.</p>
           </div>
         </div>
       </div>
     </section>
-    
-    <section class="knowledge-base-preview">
+
+    <!-- CTA Section -->
+    <section class="cta section">
       <div class="container">
-        <h2>Extensive Knowledge Base</h2>
-        <p>Access our library of technical guides, tutorials, and solutions to common problems. Find answers to your technical questions 24/7.</p>
-        <a href="/knowledge/search" class="btn btn-lg">Browse Knowledge Base</a>
-      </div>
-    </section>
-    
-    <section class="testimonials section">
-      <div class="container">
-        <div class="section-header">
-          <h2>What Our Clients Say</h2>
-          <p>Don't just take our word for it - hear from our satisfied customers</p>
-        </div>
-        
-        <div class="testimonial-slider">
-          <div class="testimonial">
-            <p>"Dern-Support fixed my laptop in less than 24 hours when I had critical work deadlines. Their technician was professional, knowledgeable, and went above and beyond to ensure everything was working perfectly. Excellent service!"</p>
-            <div class="testimonial-author">- John D., Marketing Director</div>
-          </div>
-          
-          <div class="testimonial" style="display: none;">
-            <p>"As a small business owner, having Dern-Support handle our IT needs has been a game-changer. They've improved our network performance, implemented better security measures, and provide responsive support whenever we need it."</p>
-            <div class="testimonial-author">- Sarah M., CEO of Bright Ideas Inc.</div>
-          </div>
-          
-          <div class="testimonial" style="display: none;">
-            <p>"After struggling with persistent computer issues for months, Dern-Support diagnosed and fixed the problem in one visit. Their pricing was transparent, and the technician explained everything clearly. I highly recommend their services!"</p>
-            <div class="testimonial-author">- Robert J., Freelance Designer</div>
-          </div>
+        <div class="cta-content text-center">
+          <h2>Need Technical Support?</h2>
+          <p>Get started with our professional IT support services today.</p>
+          <% if (currentUser) { %>
+            <a href="/customer/support/new" class="btn btn-primary btn-lg">Submit Support Request</a>
+          <% } else { %>
+            <a href="/signup" class="btn btn-primary btn-lg">Create Account</a>
+          <% } %>
         </div>
       </div>
     </section>
