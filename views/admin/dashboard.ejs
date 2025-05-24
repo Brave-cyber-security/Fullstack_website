@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Dern-Support</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <%- include('../partials/header') %>
+  
+  <main class="admin-dashboard section">
+    <div class="container">
+      <div class="dashboard-header">
+        <h1>Admin Dashboard</h1>
+      </div>
+      
+      <div class="stats-cards">
+        <div class="stat-card">
+          <div class="stat-value"><%= pendingRequestsCount %></div>
+          <div class="stat-label">Pending Requests</div>
+          <a href="/admin/support?status=pending" class="stat-link">View All</a>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-value"><%= inProgressRequestsCount %></div>
+          <div class="stat-label">In Progress</div>
+          <a href="/admin/support?status=in-progress" class="stat-link">View All</a>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-value"><%= resolvedRequestsCount %></div>
+          <div class="stat-label">Resolved</div>
+          <a href="/admin/support?status=resolved" class="stat-link">View All</a>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-value"><%= customersCount %></div>
+          <div class="stat-label">Customers</div>
+          <a href="/admin/customers" class="stat-link">View All</a>
+        </div>
+      </div>
+      
+      <div class="dashboard-grid">
+        <section class="dashboard-section">
+          <div class="section-header">
+            <h2>Today's Appointments</h2>
+          </div>
+          
+          <div class="appointments-list">
+            <% if (todayAppointments.length === 0) { %>
+              <div class="empty-state">
+                <p>No appointments scheduled for today.</p>
+              </div>
+            <% } else { %>
+              <% todayAppointments.forEach(appointment => { %>
+                <div class="appointment-card">
+                  <div class="appointment-time">
+                    <%= new Date(appointment.appointmentDate).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) %>
+                  </div>
+                  <h3><a href="/admin/support/<%= appointment._id %>"><%= appointment.title %></a></h3>
+                  <div class="customer-info">
+                    <span class="customer-name"><%= appointment.customer.firstName %> <%= appointment.customer.lastName %></span>
+                    <span class="customer-phone"><%= appointment.customer.phone %></span>
+                  </div>
+                  <div class="appointment-meta">
+                    <span class="device-type"><%= appointment.deviceType %></span>
+                    <span class="status <%= appointment.status %>"><%= appointment.status %></span>
+                  </div>
+                </div>
+              <% }) %>
+            <% } %>
+          </div>
+        </section>
+        
+        <section class="dashboard-section">
+          <div class="section-header">
+            <h2>Low Stock Parts</h2>
+            <a href="/admin/parts?lowStock=true" class="view-all">View All</a>
+          </div>
+          
+          <div class="parts-list">
+            <% if (lowStockParts.length === 0) { %>
+              <div class="empty-state">
+                <p>No parts are currently low in stock.</p>
+              </div>
+            <% } else { %>
+              <% lowStockParts.forEach(part => { %>
+                <div class="part-card low-stock">
+                  <h3><a href="/admin/parts/<%= part._id %>/edit"><%= part.name %></a></h3>
+                  <div class="part-stock">
+                    <span class="stock-label">Stock:</span>
+                    <span class="stock-value"><%= part.stockQuantity %></span>
+                  </div>
+                  <div class="part-meta">
+                    <span class="part-category"><%= part.category %></span>
+                    <span class="part-price">$<%= part.price.toFixed(2) %></span>
+                  </div>
+                </div>
+              <% }) %>
+            <% } %>
+          </div>
+        </section>
+        
+        <section class="dashboard-section">
+          <div class="section-header">
+            <h2>Recent Support Requests</h2>
+            <a href="/admin/support" class="view-all">View All</a>
+          </div>
+          
+          <div class="support-requests-list">
+            <% if (recentRequests.length === 0) { %>
+              <div class="empty-state">
+                <p>No support requests available.</p>
+              </div>
+            <% } else { %>
+              <% recentRequests.forEach(request => { %>
+                <div class="support-request-card">
+                  <div class="request-status <%= request.status %>">
+                    <%= request.status.charAt(0).toUpperCase() + request.status.slice(1) %>
+                  </div>
+                  <h3><a href="/admin/support/<%= request._id %>"><%= request.title %></a></h3>
+                  <div class="customer-info">
+                    <span class="customer-name"><%= request.customer.firstName %> <%= request.customer.lastName %></span>
+                  </div>
+                  <div class="request-meta">
+                    <span class="device-type"><%= request.deviceType %></span>
+                    <span class="urgency <%= request.urgency %>"><%= request.urgency %></span>
+                  </div>
+                  <div class="request-date">
+                    <%= new Date(request.createdAt).toLocaleDateString() %>
+                  </div>
+                </div>
+              <% }) %>
+            <% } %>
+          </div>
+        </section>
+      </div>
+      
+      <div class="dashboard-actions" style="margin-top: 2rem;">
+        <a href="/admin/analytics" class="btn btn-primary">View Analytics</a>
+        <a href="/knowledge/admin" class="btn btn-secondary">Manage Knowledge Base</a>
+        <a href="/admin/parts" class="btn btn-secondary">Manage Inventory</a>
+      </div>
+    </div>
+  </main>
+  
+  <%- include('../partials/footer') %>
+  
+  <script src="/js/main.js"></script>
+</body>
+</html>

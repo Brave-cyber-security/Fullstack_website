@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Support Requests - Dern-Support</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <%- include('../partials/header') %>
+  
+  <main class="support-list-page">
+    <div class="container">
+      <div class="page-header">
+        <h1>My Support Requests</h1>
+        <div class="page-actions">
+          <a href="/customer/dashboard" class="btn btn-secondary btn-sm">Back to Dashboard</a>
+          <a href="/customer/support/new" class="btn btn-primary btn-sm">New Support Request</a>
+        </div>
+      </div>
+      
+      <div class="support-requests-container">
+        <% if (supportRequests.length === 0) { %>
+          <div class="empty-state">
+            <h2>No support requests found</h2>
+            <p>You haven't submitted any support requests yet.</p>
+            <a href="/customer/support/new" class="btn btn-primary">Create Your First Support Request</a>
+          </div>
+        <% } else { %>
+          <div class="support-requests-list">
+            <% supportRequests.forEach(request => { %>
+              <div class="support-request-card">
+                <div class="request-status <%= request.status %>">
+                  <%= request.status.charAt(0).toUpperCase() + request.status.slice(1) %>
+                </div>
+                <h3><a href="/customer/support/<%= request._id %>"><%= request.title %></a></h3>
+                <div class="request-meta">
+                  <span class="device-type"><%= request.deviceType %></span>
+                  <span class="urgency <%= request.urgency %>"><%= request.urgency %></span>
+                </div>
+                <div class="request-date">
+                  <%= new Date(request.createdAt).toLocaleDateString() %>
+                </div>
+                <% if (request.appointmentDate) { %>
+                  <div class="appointment-info">
+                    <span class="appointment-label">Appointment:</span>
+                    <span class="appointment-date">
+                      <%= new Date(request.appointmentDate).toLocaleDateString() %>
+                      <%= new Date(request.appointmentDate).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) %>
+                    </span>
+                  </div>
+                <% } %>
+                <div class="request-actions">
+                  <a href="/customer/support/<%= request._id %>" class="btn btn-primary btn-sm">View Details</a>
+                  <% if (request.status !== 'closed' && request.status !== 'resolved') { %>
+                    <a href="/customer/support/<%= request._id %>/edit" class="btn btn-secondary btn-sm">Edit</a>
+                  <% } %>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </main>
+  
+  <%- include('../partials/footer') %>
+  
+  <script src="/js/main.js"></script>
+</body>
+</html>

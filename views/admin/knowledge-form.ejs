@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= article._id ? 'Edit' : 'Add' %> Knowledge Base Article - Dern-Support Admin</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <%- include('../partials/header') %>
+  
+  <main class="knowledge-form-page">
+    <div class="container">
+      <div class="page-header">
+        <h1><%= article._id ? 'Edit' : 'Add' %> Knowledge Base Article</h1>
+        <a href="/knowledge/admin" class="btn btn-secondary btn-sm">Back to Knowledge Base</a>
+      </div>
+      
+      <% if (typeof error !== 'undefined') { %>
+        <div class="alert alert-error">
+          <%= error %>
+        </div>
+      <% } %>
+      
+      <div class="form-container">
+        <form action="<%= article._id ? '/knowledge/admin/' + article._id : '/knowledge/admin' %>" method="POST" class="knowledge-form">
+          <div class="form-section">
+            <h2>Article Information</h2>
+            
+            <div class="form-group">
+              <label for="title">Title</label>
+              <input 
+                type="text" 
+                id="title" 
+                name="title" 
+                required 
+                value="<%= article.title || '' %>"
+              >
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label for="category">Category</label>
+                <select id="category" name="category" required>
+                  <option value="" disabled <%= !article.category ? 'selected' : '' %>>Select category</option>
+                  <option value="hardware" <%= article.category === 'hardware' ? 'selected' : '' %>>Hardware</option>
+                  <option value="software" <%= article.category === 'software' ? 'selected' : '' %>>Software</option>
+                  <option value="network" <%= article.category === 'network' ? 'selected' : '' %>>Network</option>
+                  <option value="security" <%= article.category === 'security' ? 'selected' : '' %>>Security</option>
+                  <option value="maintenance" <%= article.category === 'maintenance' ? 'selected' : '' %>>Maintenance</option>
+                  <option value="troubleshooting" <%= article.category === 'troubleshooting' ? 'selected' : '' %>>Troubleshooting</option>
+                  <option value="other" <%= article.category === 'other' ? 'selected' : '' %>>Other</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label>Device Types</label>
+                <div class="checkbox-group">
+                  <label class="checkbox-label">
+                    <input 
+                      type="checkbox" 
+                      name="deviceTypes" 
+                      value="desktop" 
+                      <%= article.deviceTypes && article.deviceTypes.includes('desktop') ? 'checked' : '' %>
+                    >
+                    Desktop
+                  </label>
+                  <label class="checkbox-label">
+                    <input 
+                      type="checkbox" 
+                      name="deviceTypes" 
+                      value="laptop" 
+                      <%= article.deviceTypes && article.deviceTypes.includes('laptop') ? 'checked' : '' %>
+                    >
+                    Laptop
+                  </label>
+                  <label class="checkbox-label">
+                    <input 
+                      type="checkbox" 
+                      name="deviceTypes" 
+                      value="tablet" 
+                      <%= article.deviceTypes && article.deviceTypes.includes('tablet') ? 'checked' : '' %>
+                    >
+                    Tablet
+                  </label>
+                  <label class="checkbox-label">
+                    <input 
+                      type="checkbox" 
+                      name="deviceTypes" 
+                      value="smartphone" 
+                      <%= article.deviceTypes && article.deviceTypes.includes('smartphone') ? 'checked' : '' %>
+                    >
+                    Smartphone
+                  </label>
+                  <label class="checkbox-label">
+                    <input 
+                      type="checkbox" 
+                      name="deviceTypes" 
+                      value="printer" 
+                      <%= article.deviceTypes && article.deviceTypes.includes('printer') ? 'checked' : '' %>
+                    >
+                    Printer
+                  </label>
+                  <label class="checkbox-label">
+                    <input 
+                      type="checkbox" 
+                      name="deviceTypes" 
+                      value="server" 
+                      <%= article.deviceTypes && article.deviceTypes.includes('server') ? 'checked' : '' %>
+                    >
+                    Server
+                  </label>
+                  <label class="checkbox-label">
+                    <input 
+                      type="checkbox" 
+                      name="deviceTypes" 
+                      value="network" 
+                      <%= article.deviceTypes && article.deviceTypes.includes('network') ? 'checked' : '' %>
+                    >
+                    Network
+                  </label>
+                  <label class="checkbox-label">
+                    <input 
+                      type="checkbox" 
+                      name="deviceTypes" 
+                      value="other" 
+                      <%= article.deviceTypes && article.deviceTypes.includes('other') ? 'checked' : '' %>
+                    >
+                    Other
+                  </label>
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="tags">Tags (comma separated)</label>
+              <input 
+                type="text" 
+                id="tags" 
+                name="tags" 
+                value="<%= article.tags ? article.tags.join(', ') : '' %>"
+                placeholder="e.g. wifi, router, connection, troubleshooting"
+              >
+            </div>
+            
+            <div class="form-group">
+              <label for="content">Content</label>
+              <textarea 
+                id="content" 
+                name="content" 
+                rows="20" 
+                required
+              ><%= article.content || '' %></textarea>
+              <p class="form-help">You can use Markdown formatting for rich text.</p>
+            </div>
+            
+            <div class="form-group">
+              <label class="checkbox-label">
+                <input 
+                  type="checkbox" 
+                  id="isPublished" 
+                  name="isPublished" 
+                  <%= article.isPublished !== false ? 'checked' : '' %>
+                >
+                Publish this article
+              </label>
+            </div>
+          </div>
+          
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+              <%= article._id ? 'Update' : 'Create' %> Article
+            </button>
+            <a href="/knowledge/admin" class="btn btn-secondary">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+  
+  <%- include('../partials/footer') %>
+  
+  <script src="/js/main.js"></script>
+</body>
+</html>

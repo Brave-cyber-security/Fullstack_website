@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Provide Feedback - Dern-Support</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <%- include('../partials/header') %>
+  
+  <main class="feedback-form-page">
+    <div class="container">
+      <div class="page-header">
+        <h1>Provide Feedback</h1>
+        <a href="/customer/support/<%= supportRequest._id %>" class="btn btn-secondary btn-sm">Back to Request</a>
+      </div>
+      
+      <% if (typeof error !== 'undefined') { %>
+        <div class="alert alert-error">
+          <%= error %>
+        </div>
+      <% } %>
+      
+      <div class="form-container">
+        <div class="support-request-summary">
+          <h2>Support Request: <%= supportRequest.title %></h2>
+          <div class="request-meta">
+            <span class="status <%= supportRequest.status %>">
+              <%= supportRequest.status.charAt(0).toUpperCase() + supportRequest.status.slice(1) %>
+            </span>
+            <span class="created-date">
+              Created: <%= new Date(supportRequest.createdAt).toLocaleDateString() %>
+            </span>
+          </div>
+        </div>
+        
+        <form action="/customer/support/<%= supportRequest._id %>/feedback" method="POST" class="feedback-form">
+          <div class="form-section">
+            <h2>Your Feedback</h2>
+            
+            <div class="form-group">
+              <label>How would you rate our service?</label>
+              <div class="rating-input">
+                <div class="stars">
+                  <% for (let i = 5; i >= 1; i--) { %>
+                    <input 
+                      type="radio" 
+                      id="star<%= i %>" 
+                      name="customerRating" 
+                      value="<%= i %>" 
+                      <%= supportRequest.customerRating === i ? 'checked' : '' %>
+                    >
+                    <label for="star<%= i %>" title="<%= i %> stars">★</label>
+                  <% } %>
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="customerFeedback">Comments</label>
+              <textarea 
+                id="customerFeedback" 
+                name="customerFeedback" 
+                rows="6" 
+                placeholder="Please share your experience with our service"
+              ><%= supportRequest.customerFeedback || '' %></textarea>
+            </div>
+          </div>
+          
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Submit Feedback</button>
+            <a href="/customer/support/<%= supportRequest._id %>" class="btn btn-secondary">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+  
+  <%- include('../partials/footer') %>
+  
+  <style>
+    .rating-input {
+      display: flex;
+      justify-content: center;
+      margin: 20px 0;
+    }
+    
+    .stars {
+      display: inline-flex;
+      flex-direction: row-reverse;
+      position: relative;
+    }
+    
+    .stars input {
+      display: none;
+    }
+    
+    .stars label {
+      font-size: 40px;
+      color: #ddd;
+      cursor: pointer;
+      padding: 0 5px;
+      transition: color 0.2s;
+    }
+    
+    .stars label:hover,
+    .stars label:hover ~ label,
+    .stars input:checked ~ label {
+      color: #f8b500;
+    }
+  </style>
+  
+  <script src="/js/main.js"></script>
+</body>
+</html>

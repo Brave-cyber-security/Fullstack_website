@@ -1,0 +1,176 @@
+/* Add approval status styles */
+.approval-status {
+  display: inline-block;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  margin-left: var(--space-2);
+}
+
+.approval-status.pending {
+  background-color: var(--warning-color);
+  color: white;
+}
+
+.approval-status.approved {
+  background-color: var(--success-color);
+  color: white;
+}
+
+.approval-status.rejected {
+  background-color: var(--danger-color);
+  color: white;
+}
+
+.request-status-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--space-2);
+}
+
+/* Notification styles */
+.notification-card {
+  background-color: white;
+  border-radius: var(--border-radius);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+  box-shadow: var(--shadow);
+  border-left: 4px solid var(--gray-300);
+}
+
+.notification-card.unread {
+  border-left-color: var(--primary-color);
+  background-color: var(--gray-50);
+}
+
+.notification-card.approval {
+  border-left-color: var(--success-color);
+}
+
+.notification-card.rejection {
+  border-left-color: var(--danger-color);
+}
+
+.notification-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--space-3);
+}
+
+.notification-header h3 {
+  margin: 0;
+  font-size: var(--font-size-lg);
+}
+
+.notification-meta {
+  display: flex;
+  gap: var(--space-3);
+  font-size: var(--font-size-sm);
+  color: var(--gray-600);
+}
+
+.notification-type {
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.notification-type.approval {
+  background-color: var(--success-color);
+  color: white;
+}
+
+.notification-type.rejection {
+  background-color: var(--danger-color);
+  color: white;
+}
+
+.notification-type.info {
+  background-color: var(--info-color);
+  color: white;
+}
+
+.notification-message {
+  margin-bottom: var(--space-4);
+  color: var(--gray-700);
+}
+
+.notification-actions {
+  display: flex;
+  gap: var(--space-3);
+}
+
+/* Master dashboard specific styles */
+.master-dashboard .stat-card:nth-child(1) {
+  border-top-color: var(--warning-color);
+}
+
+.master-dashboard .stat-card:nth-child(2) {
+  border-top-color: var(--success-color);
+}
+
+.master-dashboard .stat-card:nth-child(3) {
+  border-top-color: var(--danger-color);
+}
+
+.master-dashboard .stat-card:nth-child(4) {
+  border-top-color: var(--info-color);
+}
+
+.request-card,
+.decision-card {
+  background-color: white;
+  border-radius: var(--border-radius);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+  box-shadow: var(--shadow);
+  transition: transform var(--transition-normal) ease;
+}
+
+.request-card:hover,
+.decision-card:hover {
+  transform: translateY(-2px);
+}
+
+.request-urgency,
+.decision-status {
+  display: inline-block;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-bottom: var(--space-2);
+}
+
+.calculated-price {
+  background-color: var(--gray-50);
+  padding: var(--space-3);
+  border-radius: var(--border-radius);
+  margin-top: var(--space-3);
+}
+
+.calculated-price label {
+  font-weight: 600;
+  margin-right: var(--space-2);
+}
+
+.calculated-price #finalPrice {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.inactive-rule {
+  opacity: 0.6;
+}
+
+.inactive-rule td {
+  color: var(--gray-500);
+}

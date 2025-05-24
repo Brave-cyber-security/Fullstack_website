@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= part._id ? 'Edit' : 'Add' %> Spare Part - Dern-Support Admin</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <%- include('../partials/header') %>
+  
+  <main class="part-form-page">
+    <div class="container">
+      <div class="page-header">
+        <h1><%= part._id ? 'Edit' : 'Add' %> Spare Part</h1>
+        <a href="/admin/parts" class="btn btn-secondary btn-sm">Back to Inventory</a>
+      </div>
+      
+      <% if (typeof error !== 'undefined') { %>
+        <div class="alert alert-error">
+          <%= error %>
+        </div>
+      <% } %>
+      
+      <div class="form-container">
+        <form action="<%= part._id ? '/admin/parts/' + part._id : '/admin/parts' %>" method="POST" class="part-form">
+          <div class="form-section">
+            <h2>Part Information</h2>
+            
+            <div class="form-group">
+              <label for="name">Part Name</label>
+              <input 
+                type="text" 
+                id="name" 
+                name="name" 
+                required 
+                value="<%= part.name || '' %>"
+              >
+            </div>
+            
+            <div class="form-group">
+              <label for="description">Description</label>
+              <textarea 
+                id="description" 
+                name="description" 
+                rows="3" 
+                required
+              ><%= part.description || '' %></textarea>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label for="category">Category</label>
+                <select id="category" name="category" required>
+                  <option value="" disabled <%= !part.category ? 'selected' : '' %>>Select category</option>
+                  <option value="cpu" <%= part.category === 'cpu' ? 'selected' : '' %>>CPU</option>
+                  <option value="memory" <%= part.category === 'memory' ? 'selected' : '' %>>Memory</option>
+                  <option value="storage" <%= part.category === 'storage' ? 'selected' : '' %>>Storage</option>
+                  <option value="motherboard" <%= part.category === 'motherboard' ? 'selected' : '' %>>Motherboard</option>
+                  <option value="power" <%= part.category === 'power' ? 'selected' : '' %>>Power</option>
+                  <option value="display" <%= part.category === 'display' ? 'selected' : '' %>>Display</option>
+                  <option value="peripheral" <%= part.category === 'peripheral' ? 'selected' : '' %>>Peripheral</option>
+                  <option value="network" <%= part.category === 'network' ? 'selected' : '' %>>Network</option>
+                  <option value="other" <%= part.category === 'other' ? 'selected' : '' %>>Other</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label>Compatible Devices</label>
+                <div class="checkbox-group">
+                  <label class="checkbox-label">
+                    <input 
+                      type="checkbox" 
+                      name="compatibleDevices" 
+                      value="desktop" 
+                      <%= part.compatibleDevices && part.compatibleDevices.includes('desktop') ? 'checked' : '' %>
+                    >
+                    Desktop
+                  </label>
+                  <label class="checkbox-label">
+                    <input 
+                      type="checkbox" 
+                      name="compatibleDevices" 
+                      value="laptop" 
+                      <%= part.compatibleDevices && part.compatibleDevices.includes('laptop') ? 'checked' : '' %>
+                    >
+                    Laptop
+                  </label>
+                  <label class="checkbox-label">
+                    <input 
+                      type="checkbox" 
+                      name="compatibleDevices" 
+                      value="tablet" 
+                      <%= part.compatibleDevices && part.compatibleDevices.includes('tablet') ? 'checked' : '' %>
+                    >
+                    Tablet
+                  </label>
+                  <label class="checkbox-label">
+                    <input 
+                      type="checkbox" 
+                      name="compatibleDevices" 
+                      value="smartphone" 
+                      <%= part.compatibleDevices && part.compatibleDevices.includes('smartphone') ? 'checked' : '' %>
+                    >
+                    Smartphone
+                  </label>
+                  <label class="checkbox-label">
+                    <input 
+                      type="checkbox" 
+                      name="compatibleDevices" 
+                      value="printer" 
+                      <%= part.compatibleDevices && part.compatibleDevices.includes('printer') ? 'checked' : '' %>
+                    >
+                    Printer
+                  </label>
+                  <label class="checkbox-label">
+                    <input 
+                      type="checkbox" 
+                      name="compatibleDevices" 
+                      value="server" 
+                      <%= part.compatibleDevices && part.compatibleDevices.includes('server') ? 'checked' : '' %>
+                    >
+                    Server
+                  </label>
+                  <label class="checkbox-label">
+                    <input 
+                      type="checkbox" 
+                      name="compatibleDevices" 
+                      value="network" 
+                      <%= part.compatibleDevices && part.compatibleDevices.includes('network') ? 'checked' : '' %>
+                    >
+                    Network
+                  </label>
+                  <label class="checkbox-label">
+                    <input 
+                      type="checkbox" 
+                      name="compatibleDevices" 
+                      value="other" 
+                      <%= part.compatibleDevices && part.compatibleDevices.includes('other') ? 'checked' : '' %>
+                    >
+                    Other
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-section">
+            <h2>Inventory Information</h2>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label for="stockQuantity">Stock Quantity</label>
+                <input 
+                  type="number" 
+                  id="stockQuantity" 
+                  name="stockQuantity" 
+                  required 
+                  min="0" 
+                  value="<%= part.stockQuantity || 0 %>"
+                >
+              </div>
+              
+              <div class="form-group">
+                <label for="price">Price ($)</label>
+                <input 
+                  type="number" 
+                  id="price" 
+                  name="price" 
+                  required 
+                  min="0" 
+                  step="0.01" 
+                  value="<%= part.price || 0 %>"
+                >
+              </div>
+              
+              <div class="form-group">
+                <label for="minimumStockLevel">Minimum Stock Level</label>
+                <input 
+                  type="number" 
+                  id="minimumStockLevel" 
+                  name="minimumStockLevel" 
+                  min="0" 
+                  value="<%= part.minimumStockLevel || 5 %>"
+                >
+                <p class="form-help">You'll be alerted when stock falls below this level.</p>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="location">Storage Location</label>
+              <input 
+                type="text" 
+                id="location" 
+                name="location" 
+                placeholder="e.g. Shelf A1, Bin 3, etc." 
+                value="<%= part.location || '' %>"
+              >
+            </div>
+          </div>
+          
+          <div class="form-section">
+            <h2>Supplier Information</h2>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label for="supplierName">Supplier Name</label>
+                <input 
+                  type="text" 
+                  id="supplierName" 
+                  name="supplierName" 
+                  value="<%= part.supplier ? part.supplier.name : '' %>"
+                >
+              </div>
+              
+              <div class="form-group">
+                <label for="supplierContact">Supplier Contact</label>
+                <input 
+                  type="text" 
+                  id="supplierContact" 
+                  name="supplierContact" 
+                  value="<%= part.supplier ? part.supplier.contactInfo : '' %>"
+                  placeholder="Email, phone, or website"
+                >
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+              <%= part._id ? 'Update' : 'Add' %> Part
+            </button>
+            <a href="/admin/parts" class="btn btn-secondary">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+  
+  <%- include('../partials/footer') %>
+  
+  <script src="/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up - Dern-Support</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <%- include('../partials/header') %>
+  
+  <main class="auth-page section">
+    <div class="container">
+      <div class="auth-form-container">
+        <h1>Create an Account</h1>
+        
+        <% if (typeof error !== 'undefined') { %>
+          <div class="alert alert-error">
+            <%= error %>
+          </div>
+        <% } %>
+        
+        <form action="/signup" method="POST" class="auth-form">
+          <div class="form-section">
+            <h2>Account Information</h2>
+            
+            <div class="form-group">
+              <label for="email">Email Address</label>
+              <input 
+                type="email" 
+                id="email" 
+                name="email" 
+                required 
+                value="<%= typeof email !== 'undefined' ? email : '' %>"
+              >
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+              </div>
+              
+              <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" required>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-section">
+            <h2>Personal Information</h2>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label for="firstName">First Name</label>
+                <input 
+                  type="text" 
+                  id="firstName" 
+                  name="firstName" 
+                  required 
+                  value="<%= typeof firstName !== 'undefined' ? firstName : '' %>"
+                >
+              </div>
+              
+              <div class="form-group">
+                <label for="lastName">Last Name</label>
+                <input 
+                  type="text" 
+                  id="lastName" 
+                  name="lastName" 
+                  required 
+                  value="<%= typeof lastName !== 'undefined' ? lastName : '' %>"
+                >
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="phone">Phone Number</label>
+              <input 
+                type="tel" 
+                id="phone" 
+                name="phone" 
+                required 
+                value="<%= typeof phone !== 'undefined' ? phone : '' %>"
+              >
+            </div>
+            
+            <div class="form-group">
+              <label>Account Type</label>
+              <div class="radio-group">
+                <label class="radio-label">
+                  <input 
+                    type="radio" 
+                    name="accountType" 
+                    value="individual" 
+                    <%= typeof accountType !== 'undefined' && accountType === 'individual' ? 'checked' : '' %>
+                    <%= typeof accountType === 'undefined' ? 'checked' : '' %>
+                  >
+                  Individual
+                </label>
+                <label class="radio-label">
+                  <input 
+                    type="radio" 
+                    name="accountType" 
+                    value="business"
+                    <%= typeof accountType !== 'undefined' && accountType === 'business' ? 'checked' : '' %>
+                  >
+                  Business
+                </label>
+              </div>
+            </div>
+            
+            <div class="form-group business-field" id="businessNameField">
+              <label for="businessName">Business Name</label>
+              <input 
+                type="text" 
+                id="businessName" 
+                name="businessName" 
+                value="<%= typeof businessName !== 'undefined' ? businessName : '' %>"
+              >
+            </div>
+          </div>
+          
+          <div class="form-section">
+            <h2>Address</h2>
+            
+            <div class="form-group">
+              <label for="street">Street Address</label>
+              <input 
+                type="text" 
+                id="street" 
+                name="street" 
+                value="<%= typeof street !== 'undefined' ? street : '' %>"
+              >
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label for="city">City</label>
+                <input 
+                  type="text" 
+                  id="city" 
+                  name="city" 
+                  value="<%= typeof city !== 'undefined' ? city : '' %>"
+                >
+              </div>
+              
+              <div class="form-group">
+                <label for="state">State/Province</label>
+                <input 
+                  type="text" 
+                  id="state" 
+                  name="state" 
+                  value="<%= typeof state !== 'undefined' ? state : '' %>"
+                >
+              </div>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label for="zipCode">ZIP/Postal Code</label>
+                <input 
+                  type="text" 
+                  id="zipCode" 
+                  name="zipCode" 
+                  value="<%= typeof zipCode !== 'undefined' ? zipCode : '' %>"
+                >
+              </div>
+              
+              <div class="form-group">
+                <label for="country">Country</label>
+                <input 
+                  type="text" 
+                  id="country" 
+                  name="country" 
+                  value="<%= typeof country !== 'undefined' ? country : '' %>"
+                >
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary btn-block">Create Account</button>
+          </div>
+        </form>
+        
+        <div class="auth-links text-center mt-4">
+          <p>Already have an account? <a href="/login">Login</a></p>
+        </div>
+      </div>
+    </div>
+  </main>
+  
+  <%- include('../partials/footer') %>
+  
+  <script>
+    // Show/hide business name field based on account type
+    document.addEventListener('DOMContentLoaded', function() {
+      const accountTypeRadios = document.querySelectorAll('input[name="accountType"]');
+      const businessNameField = document.getElementById('businessNameField');
+      
+      function toggleBusinessField() {
+        const selectedType = document.querySelector('input[name="accountType"]:checked').value;
+        businessNameField.style.display = selectedType === 'business' ? 'block' : 'none';
+      }
+      
+      // Set initial state
+      toggleBusinessField();
+      
+      // Add change event listeners
+      accountTypeRadios.forEach(radio => {
+        radio.addEventListener('change', toggleBusinessField);
+      });
+    });
+  </script>
+  
+  <script src="/js/main.js"></script>
+</body>
+</html>

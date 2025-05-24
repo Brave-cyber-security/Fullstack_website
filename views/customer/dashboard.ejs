@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Customer Dashboard</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    .support-requests-list {
+      margin-top: 20px;
+    }
+
+    .support-request-card {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 20px;
+      border: 1px solid #ccc;
+    }
+
+    .request-status {
+      padding: 5px 10px;
+      border-radius: 5px;
+      color: white;
+    }
+
+    .request-status.open {
+      background-color: green;
+    }
+
+    .request-status.in_progress {
+      background-color: orange;
+    }
+
+    .request-status.resolved {
+      background-color: blue;
+    }
+
+    .request-status.closed {
+      background-color: gray;
+    }
+
+    .urgency.high {
+      color: red;
+    }
+
+    .urgency.medium {
+      color: orange;
+    }
+
+    .urgency.low {
+      color: green;
+    }
+
+    .dashboard-actions {
+      margin-bottom: 20px;
+    }
+
+    .approval-status {
+      padding: 5px 10px;
+      border-radius: 5px;
+      color: white;
+      font-size: smaller;
+    }
+
+    .approval-status.pending {
+      background-color: darkgoldenrod;
+    }
+
+    .approval-status.approved {
+      background-color: darkgreen;
+    }
+
+    .approval-status.rejected {
+      background-color: darkred;
+    }
+
+    .request-status-group {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Customer Dashboard</h1>
+
+    <div class="dashboard-actions">
+      <a href="/customer/support/new" class="btn btn-primary">New Support Request</a>
+      <a href="/customer/notifications" class="btn btn-outline-primary">Notifications</a>
+      <a href="/customer/profile" class="btn btn-outline-primary">My Profile</a>
+    </div>
+
+    <h2>Your Support Requests</h2>
+
+    <div class="support-requests-list">
+      <% if (supportRequests.length === 0) { %>
+        <div class="empty-state">
+          <p>You don't have any support requests yet.</p>
+          <a href="/customer/support/new" class="btn btn-primary btn-sm">Create Your First Request</a>
+        </div>
+      <% } else { %>
+        <% supportRequests.forEach(request => { %>
+          <div class="support-request-card">
+            <div class="request-status-group">
+              <div class="request-status <%= request.status %>">
+                <%= request.status.charAt(0).toUpperCase() + request.status.slice(1) %>
+              </div>
+              <% if (request.approvalStatus === 'pending_approval') { %>
+                <div class="approval-status pending">
+                  Pending Master Approval
+                </div>
+              <% } else if (request.approvalStatus === 'approved') { %>
+                <div class="approval-status approved">
+                  Approved
+                </div>
+              <% } else if (request.approvalStatus === 'rejected') { %>
+                <div class="approval-status rejected">
+                  Rejected
+                </div>
+              <% } %>
+            </div>
+            <h3><a href="/customer/support/<%= request._id %>"><%= request.title %></a></h3>
+            <div class="request-meta">
+              <span class="device-type"><%= request.deviceType %></span>
+              <span class="urgency <%= request.urgency %>"><%= request.urgency %></span>
+              <% if (request.masterSetPrice) { %>
+                <span class="final-price">Final: $<%= request.masterSetPrice.toFixed(2) %></span>
+              <% } else { %>
+                <span class="estimated-price">Est: $<%= request.estimatedCost.toFixed(2) %></span>
+              <% } %>
+            </div>
+            <div class="request-date">
+              <%= new Date(request.createdAt).toLocaleDateString() %>
+            </div>
+          </div>
+        <% }) %>
+      <% } %>
+    </div>
+  </div>
+</body>
+</html>

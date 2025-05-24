@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Support Request - Dern-Support</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <%- include('../partials/header') %>
+  
+  <main class="support-detail-page">
+    <div class="container">
+      <div class="page-header">
+        <h1>Support Request Details</h1>
+        <a href="/customer/support" class="btn btn-secondary btn-sm">Back to Requests</a>
+      </div>
+      
+      <div class="support-detail-container">
+        <div class="support-header">
+          <h2><%= supportRequest.title %></h2>
+          <div class="support-meta">
+            <span class="status <%= supportRequest.status %>">
+              <%= supportRequest.status.charAt(0).toUpperCase() + supportRequest.status.slice(1) %>
+            </span>
+            <span class="created-date">
+              Created: <%= new Date(supportRequest.createdAt).toLocaleDateString() %>
+            </span>
+          </div>
+        </div>
+        
+        <div class="support-details">
+          <div class="detail-section">
+            <h3>Issue Details</h3>
+            <div class="detail-grid">
+              <div class="detail-item">
+                <span class="detail-label">Device Type:</span>
+                <span class="detail-value"><%= supportRequest.deviceType %></span>
+              </div>
+              
+              <div class="detail-item">
+                <span class="detail-label">Urgency:</span>
+                <span class="detail-value urgency <%= supportRequest.urgency %>">
+                  <%= supportRequest.urgency.charAt(0).toUpperCase() + supportRequest.urgency.slice(1) %>
+                </span>
+              </div>
+              
+              <% if (supportRequest.location) { %>
+                <div class="detail-item">
+                  <span class="detail-label">Location:</span>
+                  <span class="detail-value"><%= supportRequest.location %></span>
+                </div>
+              <% } %>
+              
+              <div class="detail-item">
+                <span class="detail-label">Estimated Cost:</span>
+                <span class="detail-value">$<%= supportRequest.estimatedCost.toFixed(2) %></span>
+              </div>
+              
+              <% if (supportRequest.actualCost) { %>
+                <div class="detail-item">
+                  <span class="detail-label">Final Cost:</span>
+                  <span class="detail-value">$<%= supportRequest.actualCost.toFixed(2) %></span>
+                </div>
+              <% } %>
+            </div>
+          </div>
+          
+          <div class="detail-section">
+            <h3>Description</h3>
+            <div class="description">
+              <%= supportRequest.description %>
+            </div>
+          </div>
+          
+          <% if (supportRequest.appointmentDate) { %>
+            <div class="detail-section">
+              <h3>Appointment</h3>
+              <div class="appointment-details">
+                <div class="appointment-date">
+                  <span class="detail-label">Date:</span>
+                  <span class="detail-value">
+                    <%= new Date(supportRequest.appointmentDate).toLocaleDateString() %>
+                  </span>
+                </div>
+                <div class="appointment-time">
+                  <span class="detail-label">Time:</span>
+                  <span class="detail-value">
+                    <%= new Date(supportRequest.appointmentDate).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) %>
+                  </span>
+                </div>
+              </div>
+            </div>
+          <% } %>
+          
+          <% if (supportRequest.assignedTo) { %>
+            <div class="detail-section">
+              <h3>Assigned Technician</h3>
+              <div class="technician-details">
+                <%= supportRequest.assignedTo.firstName %> <%= supportRequest.assignedTo.lastName %>
+              </div>
+            </div>
+          <% } %>
+          
+          <% if (supportRequest.resolution) { %>
+            <div class="detail-section">
+              <h3>Resolution</h3>
+              <div class="resolution">
+                <%= supportRequest.resolution %>
+              </div>
+            </div>
+          <% } %>
+          
+          <% if (supportRequest.partsUsed && supportRequest.partsUsed.length > 0) { %>
+            <div class="detail-section">
+              <h3>Parts Used</h3>
+              <ul class="parts-list">
+                <% supportRequest.partsUsed.forEach(part => { %>
+                  <li>
+                    <%= part.part.name %> x <%= part.quantity %>
+                    <span class="part-price">$<%= (part.part.price * part.quantity).toFixed(2) %></span>
+                  </li>
+                <% }) %>
+              </ul>
+            </div>
+          <% } %>
+        </div>
+        
+        <div class="support-actions">
+          <% if (!supportRequest.appointmentDate && ['pending', 'assigned'].includes(supportRequest.status)) { %>
+            <a href="/customer/appointment/<%= supportRequest._id %>" class="btn btn-primary">Schedule Appointment</a>
+          <% } %>
+          
+          <% if (supportRequest.status === 'resolved' && !supportRequest.customerRating) { %>
+            <div class="feedback-section">
+              <h3>Rate Our Service</h3>
+              <form action="/customer/feedback/<%= supportRequest._id %>" method="POST" class="feedback-form">
+                <div class="rating">
+                  <% for (let i = 5; i >= 1; i--) { %>
+                    <input type="radio" id="star<%= i %>" name="rating" value="<%= i %>" />
+                    <label for="star<%= i %>" title="<%= i %> stars">★</label>
+                  <% } %>
+                </div>
+                
+                <div class="form-group">
+                  <label for="feedback">Additional Feedback (Optional)</label>
+                  <textarea id="feedback" name="feedback" rows="3"></textarea>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Submit Feedback</button>
+              </form>
+            </div>
+          <% } else if (supportRequest.customerRating) { %>
+            <div class="feedback-section">
+              <h3>Your Feedback</h3>
+              <div class="rating-display">
+                <div class="stars">
+                  <% for (let i = 1; i <= 5; i++) { %>
+                    <span class="star <%= i <= supportRequest.customerRating ? 'filled' : '' %>">★</span>
+                  <% } %>
+                </div>
+                <span class="rating-value"><%= supportRequest.customerRating %>/5</span>
+              </div>
+              
+              <% if (supportRequest.customerFeedback) { %>
+                <div class="feedback-text">
+                  <p><%= supportRequest.customerFeedback %></p>
+                </div>
+              <% } %>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </main>
+  
+  <%- include('../partials/footer') %>
+  
+  <script src="/js/main.js"></script>
+</body>
+</html>

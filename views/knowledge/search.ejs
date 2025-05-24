@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Knowledge Base - Dern-Support</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <%- include('../partials/header') %>
+  
+  <main class="knowledge-search-page">
+    <div class="container">
+      <div class="page-header">
+        <h1>Knowledge Base</h1>
+      </div>
+      
+      <div class="search-container">
+        <form action="/knowledge/search" method="GET" class="search-form">
+          <div class="search-input-group">
+            <input 
+              type="text" 
+              name="query" 
+              placeholder="Search for solutions..." 
+              value="<%= searchParams.query || '' %>"
+            >
+            <button type="submit" class="btn btn-primary">Search</button>
+          </div>
+          
+          <div class="search-filters">
+            <div class="filter-group">
+              <label for="category">Category</label>
+              <select id="category" name="category">
+                <option value="">All Categories</option>
+                <option value="hardware" <%= searchParams.category === 'hardware' ? 'selected' : '' %>>Hardware</option>
+                <option value="software" <%= searchParams.category === 'software' ? 'selected' : '' %>>Software</option>
+                <option value="network" <%= searchParams.category === 'network' ? 'selected' : '' %>>Network</option>
+                <option value="security" <%= searchParams.category === 'security' ? 'selected' : '' %>>Security</option>
+                <option value="maintenance" <%= searchParams.category === 'maintenance' ? 'selected' : '' %>>Maintenance</option>
+                <option value="troubleshooting" <%= searchParams.category === 'troubleshooting' ? 'selected' : '' %>>Troubleshooting</option>
+                <option value="other" <%= searchParams.category === 'other' ? 'selected' : '' %>>Other</option>
+              </select>
+            </div>
+            
+            <div class="filter-group">
+              <label for="deviceType">Device Type</label>
+              <select id="deviceType" name="deviceType">
+                <option value="">All Devices</option>
+                <option value="desktop" <%= searchParams.deviceType === 'desktop' ? 'selected' : '' %>>Desktop</option>
+                <option value="laptop" <%= searchParams.deviceType === 'laptop' ? 'selected' : '' %>>Laptop</option>
+                <option value="tablet" <%= searchParams.deviceType === 'tablet' ? 'selected' : '' %>>Tablet</option>
+                <option value="smartphone" <%= searchParams.deviceType === 'smartphone' ? 'selected' : '' %>>Smartphone</option>
+                <option value="printer" <%= searchParams.deviceType === 'printer' ? 'selected' : '' %>>Printer</option>
+                <option value="server" <%= searchParams.deviceType === 'server' ? 'selected' : '' %>>Server</option>
+                <option value="network" <%= searchParams.deviceType === 'network' ? 'selected' : '' %>>Network</option>
+                <option value="other" <%= searchParams.deviceType === 'other' ? 'selected' : '' %>>Other</option>
+              </select>
+            </div>
+          </div>
+        </form>
+      </div>
+      
+      <div class="articles-container">
+        <% if (articles.length === 0) { %>
+          <div class="empty-state">
+            <h2>No articles found</h2>
+            <p>Try adjusting your search criteria or browse all articles by clearing the filters.</p>
+            <a href="/knowledge/search" class="btn btn-primary">View All Articles</a>
+          </div>
+        <% } else { %>
+          <div class="articles-grid">
+            <% articles.forEach(article => { %>
+              <div class="article-card">
+                <h3><a href="/knowledge/article/<%= article._id %>"><%= article.title %></a></h3>
+                <div class="article-meta">
+                  <span class="category"><%= article.category %></span>
+                  <% if (article.deviceTypes && article.deviceTypes.length > 0) { %>
+                    <span class="device-types">
+                      <%= article.deviceTypes.slice(0, 2).join(', ') %>
+                      <% if (article.deviceTypes.length > 2) { %>
+                        +<%= article.deviceTypes.length - 2 %> more
+                      <% } %>
+                    </span>
+                  <% } %>
+                </div>
+                <div class="article-stats">
+                  <span class="views"><%= article.viewCount %> views</span>
+                  <span class="helpful"><%= article.helpfulCount %> found helpful</span>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </main>
+  
+  <%- include('../partials/footer') %>
+  
+  <script src="/js/main.js"></script>
+</body>
+</html>

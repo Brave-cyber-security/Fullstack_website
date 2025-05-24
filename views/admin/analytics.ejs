@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analytics - Dern-Support Admin</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <%- include('../partials/header') %>
+  
+  <main class="analytics-page">
+    <div class="container">
+      <div class="page-header">
+        <h1>Support Analytics</h1>
+        <a href="/admin/dashboard" class="btn btn-secondary btn-sm">Back to Dashboard</a>
+      </div>
+      
+      <div class="analytics-grid">
+        <div class="analytics-card">
+          <h2>Total Support Requests</h2>
+          <div class="stat-value"><%= totalRequests %></div>
+        </div>
+        
+        <div class="analytics-card">
+          <h2>Average Customer Rating</h2>
+          <div class="stat-value">
+            <%= avgRating.toFixed(1) %>
+            <span class="rating-stars">
+              <% for (let i = 1; i <= 5; i++) { %>
+                <span class="star <%= i <= Math.round(avgRating) ? 'filled' : '' %>">★</span>
+              <% } %>
+            </span>
+          </div>
+        </div>
+        
+        <div class="analytics-card chart-card">
+          <h2>Device Type Distribution</h2>
+          <div class="chart-container">
+            <canvas id="deviceTypeChart"></canvas>
+          </div>
+        </div>
+        
+        <div class="analytics-card chart-card">
+          <h2>Urgency Level Distribution</h2>
+          <div class="chart-container">
+            <canvas id="urgencyChart"></canvas>
+          </div>
+        </div>
+        
+        <div class="analytics-card chart-card wide">
+          <h2>Monthly Support Requests</h2>
+          <div class="chart-container">
+            <canvas id="monthlyRequestsChart"></canvas>
+          </div>
+        </div>
+        
+        <div class="analytics-card chart-card">
+          <h2>Top Locations</h2>
+          <div class="chart-container">
+            <canvas id="locationsChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  
+  <%- include('../partials/footer') %>
+  
+
+  
+  <script src="/js/main.js"></script>
+</body>
+</html>

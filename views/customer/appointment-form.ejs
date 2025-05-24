@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Schedule Appointment - Dern-Support</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <%- include('../partials/header') %>
+  
+  <main class="appointment-form-page">
+    <div class="container">
+      <div class="page-header">
+        <h1>Schedule an Appointment</h1>
+        <a href="<%= supportRequest ? '/customer/support/' + supportRequest._id : '/customer/dashboard' %>" class="btn btn-secondary btn-sm">Back</a>
+      </div>
+      
+      <% if (typeof error !== 'undefined') { %>
+        <div class="alert alert-error">
+          <%= error %>
+        </div>
+      <% } %>
+      
+      <div class="form-container">
+        <form action="<%= supportRequest ? '/customer/support/' + supportRequest._id + '/appointment' : '/customer/appointment' %>" method="POST" class="appointment-form">
+          <div class="form-section">
+            <h2>Appointment Details</h2>
+            
+            <% if (!supportRequest) { %>
+              <div class="form-group">
+                <label for="title">Reason for Appointment</label>
+                <input 
+                  type="text" 
+                  id="title" 
+                  name="title" 
+                  required 
+                  placeholder="Brief description of your issue"
+                >
+              </div>
+              
+              <div class="form-group">
+                <label for="description">Detailed Description</label>
+                <textarea 
+                  id="description" 
+                  name="description" 
+                  rows="4" 
+                  required 
+                  placeholder="Please provide details about your technical issue"
+                ></textarea>
+              </div>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="deviceType">Device Type</label>
+                  <select id="deviceType" name="deviceType" required>
+                    <option value="" disabled selected>Select device type</option>
+                    <option value="desktop">Desktop Computer</option>
+                    <option value="laptop">Laptop</option>
+                    <option value="tablet">Tablet</option>
+                    <option value="smartphone">Smartphone</option>
+                    <option value="printer">Printer</option>
+                    <option value="server">Server</option>
+                    <option value="network">Network Equipment</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+                
+                <div class="form-group">
+                  <label for="urgency">Urgency</label>
+                  <select id="urgency" name="urgency" required>
+                    <option value="" disabled selected>Select urgency level</option>
+                    <option value="low">Low - Not urgent</option>
+                    <option value="medium">Medium - Needs attention soon</option>
+                    <option value="high">High - Urgent issue</option>
+                    <option value="critical">Critical - Emergency</option>
+                  </select>
+                </div>
+              </div>
+            <% } else { %>
+              <div class="support-request-summary">
+                <h3><%= supportRequest.title %></h3>
+                <div class="request-meta">
+                  <span class="device-type"><%= supportRequest.deviceType %></span>
+                  <span class="urgency <%= supportRequest.urgency %>"><%= supportRequest.urgency %></span>
+                </div>
+              </div>
+            <% } %>
+            
+            <div class="form-group">
+              <label for="location">Service Location</label>
+              <select id="location" name="location" required>
+                <option value="" disabled selected>Select location</option>
+                <option value="onsite">On-site (at your location)</option>
+                <option value="office">At our office</option>
+                <option value="remote">Remote assistance</option>
+              </select>
+            </div>
+            
+            <div class="form-group" id="addressField" style="display: none;">
+              <label for="address">Your Address</label>
+              <textarea 
+                id="address" 
+                name="address" 
+                rows="3" 
+                placeholder="Please provide your full address for on-site service"
+              ><%= user && user.address ? `${user.address.street}, ${user.address.city}, ${user.address.state} ${user.address.zipCode}` : '' %></textarea>
+            </div>
+            
+            <div class="form-section">
+              <h3>Preferred Date and Time</h3>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="appointmentDate">Date</label>
+                  <input 
+                    type="date" 
+                    id="appointmentDate" 
+                    name="appointmentDate" 
+                    required 
+                    min="<%= new Date().toISOString().split('T')[0] %>"
+                  >
+                </div>
+                
+                <div class="form-group">
+                  <label for="appointmentTime">Time</label>
+                  <input 
+                    type="time" 
+                    id="appointmentTime" 
+                    name="appointmentTime" 
+                    required
+                  >
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label for="notes">Additional Notes</label>
+                <textarea 
+                  id="notes" 
+                  name="notes" 
+                  rows="3" 
+                  placeholder="Any additional information that might help us prepare for your appointment"
+                ></textarea>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Schedule Appointment</button>
+            <a href="<%= supportRequest ? '/customer/support/' + supportRequest._id : '/customer/dashboard' %>" class="btn btn-secondary">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+  
+  <%- include('../partials/footer') %>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Show/hide address field based on location selection
+      const locationSelect = document.getElementById('location');
+      const addressField = document.getElementById('addressField');
+      
+      if (locationSelect && addressField) {
+        function toggleAddressField() {
+          addressField.style.display = locationSelect.value === 'onsite' ? 'block' : 'none';
+        }
+        
+        // Set initial state
+        toggleAddressField();
+        
+        // Add change event listener
+        locationSelect.addEventListener('change', toggleAddressField);
+      }
+      
+      // Set minimum date for appointment
+      const dateInput = document.getElementById('appointmentDate');
+      if (dateInput) {
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        
+        const minDate = tomorrow.toISOString().split('T')[0];
+        dateInput.setAttribute('min', minDate);
+      }
+    });
+  </script>
+  
+  <script src="/js/main.js"></script>
+</body>
+</html>
