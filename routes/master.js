@@ -69,56 +69,26 @@ router.get("/dashboard", async (req, res) => {
     // Get system statistics
     const totalKnowledgeArticles = await KnowledgeBase.countDocuments({ isPublished: true })
 
-    // Get urgency distribution
-    const urgencyStats = await SupportRequest.aggregate([
-      { $group: { _id: "$urgency", count: { $sum: 1 } } },
-      { $sort: { count: -1 } },
-    ])
-
-    // Get device type distribution
-    const deviceTypeStats = await SupportRequest.aggregate([
-      { $group: { _id: "$deviceType", count: { $sum: 1 } } },
-      { $sort: { count: -1 } },
-    ])
-
-    // Get monthly request trends
-    const monthlyTrends = await SupportRequest.aggregate([
-      {
-        $group: {
-          _id: {
-            year: { $year: "$createdAt" },
-            month: { $month: "$createdAt" },
-          },
-          count: { $sum: 1 },
-        },
-      },
-      { $sort: { "_id.year": 1, "_id.month": 1 } },
-      { $limit: 12 },
-    ])
-
     res.render("master/dashboard", {
       title: "Master Dashboard",
       // User statistics
-      totalUsers,
-      totalCustomers,
-      totalAdmins,
-      totalMasters,
+      totalUsers: totalUsers || 0,
+      totalCustomers: totalCustomers || 0,
+      totalAdmins: totalAdmins || 0,
+      totalMasters: totalMasters || 0,
       // Support request statistics
-      totalRequests,
-      pendingRequestsCount,
-      pendingApprovalCount,
-      inProgressRequestsCount,
-      resolvedRequestsCount,
+      totalRequests: totalRequests || 0,
+      pendingRequestsCount: pendingRequestsCount || 0,
+      pendingApprovalCount: pendingApprovalCount || 0,
+      inProgressRequestsCount: inProgressRequestsCount || 0,
+      resolvedRequestsCount: resolvedRequestsCount || 0,
       // Data arrays
-      allSupportRequests: validSupportRequests,
-      pendingApprovalRequests,
-      todayAppointments,
-      lowStockParts,
+      allSupportRequests: validSupportRequests || [],
+      pendingApprovalRequests: pendingApprovalRequests || [],
+      todayAppointments: todayAppointments || [],
+      lowStockParts: lowStockParts || [],
       // System statistics
-      totalKnowledgeArticles,
-      urgencyStats,
-      deviceTypeStats,
-      monthlyTrends,
+      totalKnowledgeArticles: totalKnowledgeArticles || 0,
     })
   } catch (error) {
     console.error("Master dashboard error:", error)
