@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - Dern Support</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        .approval-section {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .approval-badge {
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .approval-pending { background: #ffc107; color: #000; }
+        .approval-approved { background: #28a745; color: #fff; }
+        .approval-rejected { background: #dc3545; color: #fff; }
+        .master-actions {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <%- include('../partials/header') %>
+    
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+                <div class="sidebar-sticky">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/master/dashboard">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/master/support">All Support Requests</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/master/users">User Management</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/master/settings">System Settings</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2"><%= title %></h1>
+                    <div>
+                        <a href="/master/support" class="btn btn-secondary">← Back to All Requests</a>
+                    </div>
+                </div>
+
+                <!-- Request Overview -->
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Request Details</h5>
+                                <small class="text-muted">ID: <%= supportRequest._id.toString().slice(-8) %></small>
+                            </div>
+                            <div class="card-body">
+                                <h4><%= supportRequest.title %></h4>
+                                <p class="text-muted"><%= supportRequest.description %></p>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <strong>Device Type:</strong> 
+                                        <span class="badge badge-info"><%= supportRequest.deviceType %></span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <strong>Urgency:</strong> 
+                                        <span class="badge badge-<%= supportRequest.urgency === 'critical' ? 'danger' : supportRequest.urgency === 'high' ? 'warning' : supportRequest.urgency === 'medium' ? 'info' : 'secondary' %>">
+                                            <%= supportRequest.urgency %>
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <hr>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <strong>Status:</strong> 
+                                        <span class="badge badge-<%= supportRequest.status === 'resolved' ? 'success' : supportRequest.status === 'in-progress' ? 'warning' : supportRequest.status === 'pending' ? 'info' : 'secondary' %>">
+                                            <%= supportRequest.status %>
+                                        </span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <strong>Approval Status:</strong> 
+                                        <span class="approval-badge approval-<%= (supportRequest.approvalStatus || 'pending_approval').replace('_', '-') %>">
+                                            <%= (supportRequest.approvalStatus || 'pending_approval').replace('_', ' ') %>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <hr>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <strong>Created:</strong> <%= new Date(supportRequest.createdAt).toLocaleString() %>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <strong>Last Updated:</strong> <%= new Date(supportRequest.updatedAt).toLocaleString() %>
+                                    </div>
+                                </div>
+
+                                <% if (supportRequest.appointmentDate) { %>
+                                    <hr>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <strong>Appointment Date:</strong> <%= new Date(supportRequest.appointmentDate).toLocaleString() %>
+                                        </div>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <!-- Customer Information -->
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h6>Customer Information</h6>
+                            </div>
+                            <div class="card-body">
+                                <% if (supportRequest.customer) { %>
+                                    <p><strong><%= supportRequest.customer.firstName %> <%= supportRequest.customer.lastName %></strong></p>
+                                    <p><small class="text-muted"><%= supportRequest.customer.email %></small></p>
+                                    <% if (supportRequest.customer.phone) { %>
+                                        <p><small><%= supportRequest.customer.phone %></small></p>
+                                    <% } %>
+                                    <% if (supportRequest.customer.businessName) { %>
+                                        <p><strong>Business:</strong> <%= supportRequest.customer.businessName %></p>
+                                    <% } %>
+                                    <% if (supportRequest.customer.accountType) { %>
+                                        <p><strong>Account Type:</strong> 
+                                            <span class="badge badge-primary"><%= supportRequest.customer.accountType %></span>
+                                        </p>
+                                    <% } %>
+                                <% } else { %>
+                                    <p class="text-muted">Customer information not available</p>
+                                <% } %>
+                            </div>
+                        </div>
+
+                        <!-- Assignment Information -->
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h6>Assignment</h6>
+                            </div>
+                            <div class="card-body">
+                                <% if (supportRequest.assignedTo) { %>
+                                    <p><strong>Assigned To:</strong></p>
+                                    <p><%= supportRequest.assignedTo.firstName %> <%= supportRequest.assignedTo.lastName %></p>
+                                    <p><small class="text-muted"><%= supportRequest.assignedTo.email %></small></p>
+                                <% } else { %>
+                                    <p class="text-muted">Not assigned yet</p>
+                                <% } %>
+                            </div>
+                        </div>
+
+                        <!-- Master Approval Information -->
+                        <% if (supportRequest.masterApprovedBy) { %>
+                            <div class="card mb-3">
+                                <div class="card-header">
+                                    <h6>Master Approval</h6>
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>Approved By:</strong></p>
+                                    <p><%= supportRequest.masterApprovedBy.firstName %> <%= supportRequest.masterApprovedBy.lastName %></p>
+                                    <p><small class="text-muted"><%= new Date(supportRequest.masterApprovedAt).toLocaleString() %></small></p>
+                                    <% if (supportRequest.masterSetPrice) { %>
+                                        <p><strong>Set Price:</strong> $<%= supportRequest.masterSetPrice %></p>
+                                    <% } %>
+                                    <% if (supportRequest.masterComments) { %>
+                                        <p><strong>Comments:</strong></p>
+                                        <p><%= supportRequest.masterComments %></p>
+                                    <% } %>
+                                </div>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+
+                <!-- Master Actions -->
+                <% if ((supportRequest.approvalStatus || 'pending_approval') === 'pending_approval') { %>
+                    <div class="master-actions">
+                        <h5>Master Approval Required</h5>
+                        <p>This request requires master approval before it can be assigned to a technician.</p>
+                        
+                        <form method="POST" action="/master/support/<%= supportRequest._id %>/approve">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="masterSetPrice">Set Price (Optional)</label>
+                                        <input type="number" step="0.01" class="form-control" id="masterSetPrice" name="masterSetPrice" placeholder="0.00">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="masterComments">Comments</label>
+                                        <textarea class="form-control" id="masterComments" name="masterComments" rows="3" placeholder="Add your comments..."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <button type="submit" name="action" value="approve" class="btn btn-success mr-2">
+                                    <i class="fas fa-check"></i> Approve Request
+                                </button>
+                                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#rejectModal">
+                                    <i class="fas fa-times"></i> Reject Request
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                <% } else { %>
+                    <div class="approval-section">
+                        <h5>Approval Status: 
+                            <span class="approval-badge approval-<%= (supportRequest.approvalStatus || 'pending_approval').replace('_', '-') %>">
+                                <%= (supportRequest.approvalStatus || 'pending_approval').replace('_', ' ') %>
+                            </span>
+                        </h5>
+                        <% if (supportRequest.approvalStatus === 'rejected' && supportRequest.rejectionReason) { %>
+                            <p><strong>Rejection Reason:</strong> <%= supportRequest.rejectionReason %></p>
+                        <% } %>
+                    </div>
+                <% } %>
+
+                <!-- Parts Used (if any) -->
+                <% if (supportRequest.partsUsed && supportRequest.partsUsed.length > 0) { %>
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h6>Parts Used</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Part Name</th>
+                                            <th>Quantity</th>
+                                            <th>Unit Price</th>
+                                            <th>Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% supportRequest.partsUsed.forEach(partUsed => { %>
+                                            <tr>
+                                                <td><%= partUsed.part ? partUsed.part.name : 'Unknown Part' %></td>
+                                                <td><%= partUsed.quantity %></td>
+                                                <td>$<%= partUsed.unitPrice %></td>
+                                                <td>$<%= (partUsed.quantity * partUsed.unitPrice).toFixed(2) %></td>
+                                            </tr>
+                                        <% }) %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                <% } %>
+            </main>
+        </div>
+    </div>
+
+    <!-- Reject Modal -->
+    <div class="modal fade" id="rejectModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form method="POST" action="/master/support/<%= supportRequest._id %>/approve">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Reject Request</h5>
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="rejectionReason">Rejection Reason</label>
+                            <textarea class="form-control" id="rejectionReason" name="rejectionReason" rows="4" required placeholder="Please provide a reason for rejection..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="modalMasterComments">Additional Comments</label>
+                            <textarea class="form-control" id="modalMasterComments" name="masterComments" rows="3" placeholder="Add any additional comments..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="submit" name="action" value="reject" class="btn btn-danger">Reject Request</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../partials/footer') %>
+    
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/main.js"></script>
+</body>
+</html>

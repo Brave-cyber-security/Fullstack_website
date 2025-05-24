@@ -259,8 +259,8 @@
                                                         </span>
                                                     </td>
                                                     <td>
-                                                        <span class="approval-badge approval-<%= request.approvalStatus.replace('_', '-') %>">
-                                                            <%= request.approvalStatus.replace('_', ' ') %>
+                                                        <span class="approval-badge approval-<%= (request.approvalStatus || 'pending_approval').replace('_', '-') %>">
+                                                            <%= (request.approvalStatus || 'pending_approval').replace('_', ' ') %>
                                                         </span>
                                                     </td>
                                                     <td>
