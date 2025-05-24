@@ -1,0 +1,20 @@
+# Node.js dependency papkasi
+node_modules/
+
+# Mu hit o'zgaruvchilari fayli
+.env
+
+# Log fayllar
+*.log
+npm-debug.log*
+
+# Dist yoki build papkalari (agar mavjud bo'lsa)
+dist/
+build/
+
+# IDE va muharrirlar uchun avtomatik yaratiladigan fayllar
+.vscode/
+.idea/
+
+# package-lock.json (agar uni versiya nazoratiga qo‘shmoqchi bo‘lmasangiz)
+package-lock.json

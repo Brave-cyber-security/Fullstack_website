@@ -60,8 +60,13 @@
                   </div>
                   <h3><a href="/admin/support/<%= appointment._id %>"><%= appointment.title %></a></h3>
                   <div class="customer-info">
-                    <span class="customer-name"><%= appointment.customer.firstName %> <%= appointment.customer.lastName %></span>
-                    <span class="customer-phone"><%= appointment.customer.phone %></span>
+                    <% if (appointment.customer) { %>
+                      <span class="customer-name"><%= appointment.customer.firstName %> <%= appointment.customer.lastName %></span>
+                      <span class="customer-phone"><%= appointment.customer.phone %></span>
+                    <% } else { %>
+                      <span class="customer-name">Customer Deleted</span>
+                      <span class="customer-phone">N/A</span>
+                    <% } %>
                   </div>
                   <div class="appointment-meta">
                     <span class="device-type"><%= appointment.deviceType %></span>
@@ -121,7 +126,11 @@
                   </div>
                   <h3><a href="/admin/support/<%= request._id %>"><%= request.title %></a></h3>
                   <div class="customer-info">
-                    <span class="customer-name"><%= request.customer.firstName %> <%= request.customer.lastName %></span>
+                    <% if (request.customer) { %>
+                      <span class="customer-name"><%= request.customer.firstName %> <%= request.customer.lastName %></span>
+                    <% } else { %>
+                      <span class="customer-name">Customer Deleted</span>
+                    <% } %>
                   </div>
                   <div class="request-meta">
                     <span class="device-type"><%= request.deviceType %></span>
