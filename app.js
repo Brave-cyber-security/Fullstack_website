@@ -114,7 +114,7 @@ app.use((req, res, next) => {
 })
 
 // Routes
-app.use("/auth", authRoutes)
+app.use("/", authRoutes) // This handles /login, /signup, /logout
 app.use("/admin", adminRoutes)
 app.use("/knowledge", knowledgeBaseRoutes)
 app.use("/master", masterRoutes)
@@ -122,14 +122,6 @@ app.use("/master", masterRoutes)
 // Main routes
 app.get("/", (req, res) => {
   res.render("index")
-})
-
-app.get("/login", (req, res) => {
-  res.render("auth/login")
-})
-
-app.get("/signup", (req, res) => {
-  res.render("auth/signup")
 })
 
 app.get("/logout", (req, res) => {

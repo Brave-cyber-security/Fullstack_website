@@ -43,8 +43,20 @@ export const isMaster = async (req, res, next) => {
   }
 }
 
+// Add GET routes for login and signup pages at the beginning of the file, after the middleware definitions
+
+// GET route for login page
+router.get("/login", (req, res) => {
+  res.render("auth/login")
+})
+
+// GET route for signup page
+router.get("/signup", (req, res) => {
+  res.render("auth/signup")
+})
+
 // Register route
-router.post("/register", async (req, res) => {
+router.post("/signup", async (req, res) => {
   try {
     const {
       email,
