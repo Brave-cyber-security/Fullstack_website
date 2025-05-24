@@ -16,6 +16,7 @@ import { authRoutes } from "./routes/auth.js"
 import { adminRoutes } from "./routes/admin.js"
 import { knowledgeBaseRoutes } from "./routes/knowledgeBase.js"
 import { masterRoutes } from "./routes/master.js"
+import { customerRoutes } from "./routes/customer.js"
 
 // Load environment variables
 dotenv.config()
@@ -118,6 +119,7 @@ app.use("/", authRoutes) // This handles /login, /signup, /logout
 app.use("/admin", adminRoutes)
 app.use("/knowledge", knowledgeBaseRoutes)
 app.use("/master", masterRoutes)
+app.use("/customer", customerRoutes)
 
 // Main routes
 app.get("/", (req, res) => {
@@ -142,6 +144,23 @@ app.get("/customer/dashboard", (req, res) => {
   res.render("customer/dashboard", {
     supportRequests: [], // This will be populated from the database
   })
+})
+
+// Add a seed route for development
+app.get("/seed", async (req, res) => {
+  if (process.env.NODE_ENV === "production") {
+    return res.status(403).send("Seeding not allowed in production")
+  }
+
+  try {
+    // Import and run seed function
+    const { execSync } = await import("child_process")
+    execSync("node seed/seed.js", { stdio: "inherit" })
+    res.send("Database seeded successfully! <a href='/'>Go to homepage</a>")
+  } catch (error) {
+    console.error("Seed error:", error)
+    res.status(500).send(`Seeding failed: ${error.message}`)
+  }
 })
 
 // 404 handler
