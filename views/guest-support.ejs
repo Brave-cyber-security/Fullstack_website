@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quick Support Request - Dern-Support</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+  <%- include('partials/header') %>
+  
+  <main class="support-form-page">
+    <div class="container">
+      <div class="page-header">
+        <h1><i class="fas fa-headset"></i> Quick Support Request</h1>
+        <p>Get immediate help without creating an account</p>
+      </div>
+      
+      <% if (typeof error !== 'undefined') { %>
+        <div class="alert alert-error">
+          <i class="fas fa-exclamation-triangle"></i>
+          <%= error %>
+        </div>
+      <% } %>
+      
+      <% if (typeof success !== 'undefined') { %>
+        <div class="alert alert-success">
+          <i class="fas fa-check-circle"></i>
+          <%= success %>
+        </div>
+      <% } %>
+      
+      <div class="form-container">
+        <div class="guest-support-info">
+          <div class="info-card">
+            <i class="fas fa-bolt"></i>
+            <h3>Instant Support</h3>
+            <p>Get help immediately without registration. Perfect for urgent issues.</p>
+          </div>
+          <div class="info-card">
+            <i class="fas fa-envelope"></i>
+            <h3>Email Updates</h3>
+            <p>Receive updates and solutions directly to your email address.</p>
+          </div>
+          <div class="info-card">
+            <i class="fas fa-user-plus"></i>
+            <h3>Upgrade Anytime</h3>
+            <p>Create an account later for full dashboard access and history.</p>
+          </div>
+        </div>
+        
+        <form action="/guest-support" method="POST" class="support-form">
+          <div class="form-section">
+            <h2><i class="fas fa-user"></i> Contact Information</h2>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label for="email">Email Address *</label>
+                <input 
+                  type="email" 
+                  id="email" 
+                  name="email" 
+                  required 
+                  placeholder="your.email@example.com"
+                  value="<%= typeof email !== 'undefined' ? email : '' %>"
+                >
+                <div class="form-help">We'll send updates and solutions to this email</div>
+              </div>
+              
+              <div class="form-group">
+                <label for="name">Your Name</label>
+                <input 
+                  type="text" 
+                  id="name" 
+                  name="name" 
+                  placeholder="John Doe"
+                  value="<%= typeof name !== 'undefined' ? name : '' %>"
+                >
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="phone">Phone Number (Optional)</label>
+              <input 
+                type="tel" 
+                id="phone" 
+                name="phone" 
+                placeholder="+1 (555) 123-4567"
+                value="<%= typeof phone !== 'undefined' ? phone : '' %>"
+              >
+              <div class="form-help">For urgent issues requiring immediate callback</div>
+            </div>
+          </div>
+          
+          <div class="form-section">
+            <h2><i class="fas fa-exclamation-circle"></i> Issue Details</h2>
+            
+            <div class="form-group">
+              <label for="title">Issue Title *</label>
+              <input 
+                type="text" 
+                id="title" 
+                name="title" 
+                required 
+                placeholder="Brief description of your issue"
+                value="<%= typeof title !== 'undefined' ? title : '' %>"
+              >
+            </div>
+            
+            <div class="form-group">
+              <label for="description">Detailed Description *</label>
+              <textarea 
+                id="description" 
+                name="description" 
+                rows="5" 
+                required 
+                placeholder="Please provide as much detail as possible about your issue, including any error messages"
+              ><%= typeof description !== 'undefined' ? description : '' %></textarea>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label for="deviceType">Device Type *</label>
+                <select id="deviceType" name="deviceType" required>
+                  <option value="" disabled <%= typeof deviceType === 'undefined' ? 'selected' : '' %>>Select device type</option>
+                  <option value="desktop" <%= typeof deviceType !== 'undefined' && deviceType === 'desktop' ? 'selected' : '' %>>Desktop Computer</option>
+                  <option value="laptop" <%= typeof deviceType !== 'undefined' && deviceType === 'laptop' ? 'selected' : '' %>>Laptop</option>
+                  <option value="tablet" <%= typeof deviceType !== 'undefined' && deviceType === 'tablet' ? 'selected' : '' %>>Tablet</option>
+                  <option value="smartphone" <%= typeof deviceType !== 'undefined' && deviceType === 'smartphone' ? 'selected' : '' %>>Smartphone</option>
+                  <option value="printer" <%= typeof deviceType !== 'undefined' && deviceType === 'printer' ? 'selected' : '' %>>Printer</option>
+                  <option value="server" <%= typeof deviceType !== 'undefined' && deviceType === 'server' ? 'selected' : '' %>>Server</option>
+                  <option value="network" <%= typeof deviceType !== 'undefined' && deviceType === 'network' ? 'selected' : '' %>>Network Equipment</option>
+                  <option value="other" <%= typeof deviceType !== 'undefined' && deviceType === 'other' ? 'selected' : '' %>>Other</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label for="urgency">Urgency Level *</label>
+                <select id="urgency" name="urgency" required>
+                  <option value="" disabled <%= typeof urgency === 'undefined' ? 'selected' : '' %>>Select urgency</option>
+                  <option value="low" <%= typeof urgency !== 'undefined' && urgency === 'low' ? 'selected' : '' %>>Low - Not urgent</option>
+                  <option value="medium" <%= typeof urgency !== 'undefined' && urgency === 'medium' ? 'selected' : '' %>>Medium - Affects work</option>
+                  <option value="high" <%= typeof urgency !== 'undefined' && urgency === 'high' ? 'selected' : '' %>>High - Serious issue</option>
+                  <option value="critical" <%= typeof urgency !== 'undefined' && urgency === 'critical' ? 'selected' : '' %>>Critical - Complete outage</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-section cost-estimate" id="costEstimateSection">
+            <h2><i class="fas fa-calculator"></i> Estimated Cost</h2>
+            <p class="note">Based on your device type and urgency level</p>
+            <div class="cost-display" id="costDisplay">
+              <span class="currency">$</span>
+              <span class="amount">0.00</span>
+            </div>
+            <p class="cost-note">This is an estimate only. Final cost may vary based on parts and labor required.</p>
+          </div>
+          
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary btn-block">
+              <i class="fas fa-paper-plane"></i> Submit Support Request
+            </button>
+            <p class="form-help">
+              By submitting this form, you agree to receive email updates about your support request.
+              <a href="/signup">Create an account</a> for full dashboard access.
+            </p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+  
+  <%- include('partials/footer') %>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const deviceTypeSelect = document.getElementById('deviceType');
+      const urgencySelect = document.getElementById('urgency');
+      const costDisplay = document.getElementById('costDisplay').querySelector('.amount');
+      
+      // Base rates by device type
+      const baseRates = {
+        'desktop': 75,
+        'laptop': 85,
+        'tablet': 65,
+        'smartphone': 60,
+        'printer': 70,
+        'server': 150,
+        'network': 100,
+        'other': 80
+      };
+      
+      // Multipliers by urgency
+      const urgencyMultipliers = {
+        'low': 1,
+        'medium': 1.25,
+        'high': 1.5,
+        'critical': 2
+      };
+      
+      function updateCostEstimate() {
+        const deviceType = deviceTypeSelect.value;
+        const urgency = urgencySelect.value;
+        
+        if (deviceType && urgency) {
+          const baseRate = baseRates[deviceType] || 80;
+          const multiplier = urgencyMultipliers[urgency] || 1;
+          const estimatedCost = baseRate * multiplier;
+          
+          costDisplay.textContent = estimatedCost.toFixed(2);
+        } else {
+          costDisplay.textContent = '0.00';
+        }
+      }
+      
+      // Add event listeners
+      deviceTypeSelect.addEventListener('change', updateCostEstimate);
+      urgencySelect.addEventListener('change', updateCostEstimate);
+      
+      // Initial calculation
+      updateCostEstimate();
+    });
+  </script>
+  
+  <script src="/js/main.js"></script>
+</body>
+</html>

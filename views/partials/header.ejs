@@ -6,43 +6,42 @@
   <%- include('master-header', { currentPage: typeof currentPage !== 'undefined' ? currentPage : '' }) %>
 <% } else { %>
   <!-- Regular users and customers get the traditional navbar -->
-  <header class="header">
-    <nav class="navbar">
-      <div class="container">
-        <div class="navbar-brand">
-          <a href="/" class="brand-link">
-            <h1>Dern-Support</h1>
-          </a>
-        </div>
-        
-        <div class="navbar-menu">
-          <ul class="nav-links">
-            <li><a href="/">Home</a></li>
-            <li><a href="/#services">Services</a></li>
-            <li><a href="/knowledge/search">Knowledge Base</a></li>
-            <% if (typeof currentUser !== 'undefined' && currentUser) { %>
-              <% if (typeof isMaster !== 'undefined' && isMaster) { %>
-                <li><a href="/master/dashboard">Master Dashboard</a></li>
-              <% } else if (typeof isAdmin !== 'undefined' && isAdmin) { %>
-                <li><a href="/admin/dashboard">Admin Dashboard</a></li>
-              <% } else { %>
-                <li><a href="/customer/dashboard">Dashboard</a></li>
-              <% } %>
-              <li><a href="/logout" class="btn btn-sm btn-outline-primary">Logout</a></li>
-            <% } else { %>
-              <li><a href="/login">Login</a></li>
-              <li><a href="/signup" class="btn btn-sm btn-primary">Sign Up</a></li>
-            <% } %>
-          </ul>
-        </div>
-        
-        <!-- Mobile menu toggle -->
-        <div class="mobile-menu-toggle">
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
+  <header class="site-header">
+    <div class="container">
+      <div class="logo">
+        <a href="/">
+          <i class="fas fa-tools"></i>
+          Dern-Support
+        </a>
       </div>
-    </nav>
+      
+      <nav class="nav-links">
+        <a href="/">Home</a>
+        <a href="/#services">Services</a>
+        <a href="/knowledge/search">Knowledge Base</a>
+        <% if (typeof currentUser !== 'undefined' && currentUser) { %>
+          <% if (typeof isMaster !== 'undefined' && isMaster) { %>
+            <a href="/master/dashboard">Master Dashboard</a>
+          <% } else if (typeof isAdmin !== 'undefined' && isAdmin) { %>
+            <a href="/admin/dashboard">Admin Dashboard</a>
+          <% } else { %>
+            <a href="/customer/dashboard">Dashboard</a>
+            <a href="/customer/support/new" class="btn btn-primary btn-sm">New Request</a>
+          <% } %>
+          <a href="/logout" class="btn btn-outline-primary btn-sm">Logout</a>
+        <% } else { %>
+          <a href="/guest-support" class="btn btn-accent btn-sm">Quick Support</a>
+          <a href="/login">Login</a>
+          <a href="/signup" class="btn btn-primary btn-sm">Sign Up</a>
+        <% } %>
+      </nav>
+      
+      <!-- Mobile menu toggle -->
+      <button class="mobile-menu-toggle">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
   </header>
 <% } %>

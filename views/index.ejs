@@ -5,8 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dern-Support - Professional IT Support Services</title>
   <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body>
+<body class="landing-page">
   <%- include('partials/header') %>
   
   <main>
@@ -14,89 +15,201 @@
     <section class="hero">
       <div class="container">
         <div class="hero-content">
-          <h1 class="hero-title">Professional IT Support Services</h1>
-          <p class="hero-subtitle">
-            Get expert technical support for all your devices and systems. 
-            Fast, reliable, and professional service you can trust.
-          </p>
-          <div class="hero-actions">
-            <% if (currentUser) { %>
-              <a href="/customer/support/new" class="btn btn-primary btn-lg">Request Support</a>
-              <a href="/customer/dashboard" class="btn btn-outline-primary btn-lg">My Dashboard</a>
-            <% } else { %>
-              <a href="/signup" class="btn btn-primary btn-lg">Get Started</a>
-              <a href="/login" class="btn btn-outline-primary btn-lg">Login</a>
-            <% } %>
+          <div class="hero-text">
+            <h1>Professional IT Support When You Need It</h1>
+            <p>
+              Get expert technical support for all your devices and systems. 
+              Fast, reliable, and professional service you can trust - available 24/7.
+            </p>
+            <div class="cta-buttons">
+              <% if (currentUser) { %>
+                <a href="/customer/support/new" class="btn btn-primary btn-lg">
+                  <i class="fas fa-plus"></i> Request Support
+                </a>
+                <a href="/customer/dashboard" class="btn btn-outline-primary btn-lg">
+                  <i class="fas fa-tachometer-alt"></i> My Dashboard
+                </a>
+              <% } else { %>
+                <a href="/guest-support" class="btn btn-primary btn-lg">
+                  <i class="fas fa-headset"></i> Get Quick Help
+                </a>
+                <a href="/signup" class="btn btn-outline-primary btn-lg">
+                  <i class="fas fa-user-plus"></i> Create Account
+                </a>
+              <% } %>
+            </div>
+          </div>
+          <div class="hero-image">
+            <div class="hero-stats">
+              <div class="stat">
+                <div class="stat-number">24/7</div>
+                <div class="stat-label">Support Available</div>
+              </div>
+              <div class="stat">
+                <div class="stat-number">1000+</div>
+                <div class="stat-label">Happy Customers</div>
+              </div>
+              <div class="stat">
+                <div class="stat-number">15min</div>
+                <div class="stat-label">Avg Response Time</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
     <!-- Services Section -->
-    <section id="services" class="services section">
+    <section id="services" class="services">
       <div class="container">
-        <h2 class="section-title text-center">Our Services</h2>
-        <div class="services-grid">
+        <div class="section-header">
+          <h2>Our Expert Services</h2>
+          <p>Comprehensive IT support solutions for all your technology needs</p>
+        </div>
+        <div class="service-grid">
           <div class="service-card">
-            <div class="service-icon">💻</div>
+            <div class="service-icon">
+              <i class="fas fa-desktop"></i>
+            </div>
             <h3>Computer Repair</h3>
-            <p>Desktop and laptop repair services for hardware and software issues.</p>
+            <p>Desktop and laptop repair services for hardware and software issues. Quick diagnostics and professional solutions.</p>
+            <ul class="service-features">
+              <li><i class="fas fa-check"></i> Hardware Diagnostics</li>
+              <li><i class="fas fa-check"></i> Software Troubleshooting</li>
+              <li><i class="fas fa-check"></i> Data Recovery</li>
+            </ul>
           </div>
           <div class="service-card">
-            <div class="service-icon">📱</div>
+            <div class="service-icon">
+              <i class="fas fa-mobile-alt"></i>
+            </div>
             <h3>Mobile Support</h3>
-            <p>Smartphone and tablet troubleshooting and repair services.</p>
+            <p>Smartphone and tablet troubleshooting and repair services. Expert help for all mobile devices.</p>
+            <ul class="service-features">
+              <li><i class="fas fa-check"></i> Screen Repairs</li>
+              <li><i class="fas fa-check"></i> Software Issues</li>
+              <li><i class="fas fa-check"></i> Data Transfer</li>
+            </ul>
           </div>
           <div class="service-card">
-            <div class="service-icon">🌐</div>
+            <div class="service-icon">
+              <i class="fas fa-network-wired"></i>
+            </div>
             <h3>Network Setup</h3>
-            <p>Network configuration, security setup, and connectivity solutions.</p>
+            <p>Network configuration, security setup, and connectivity solutions for homes and businesses.</p>
+            <ul class="service-features">
+              <li><i class="fas fa-check"></i> WiFi Configuration</li>
+              <li><i class="fas fa-check"></i> Security Setup</li>
+              <li><i class="fas fa-check"></i> Performance Optimization</li>
+            </ul>
           </div>
           <div class="service-card">
-            <div class="service-icon">🔧</div>
+            <div class="service-icon">
+              <i class="fas fa-tools"></i>
+            </div>
             <h3>System Maintenance</h3>
-            <p>Regular maintenance and optimization for peak performance.</p>
+            <p>Regular maintenance and optimization for peak performance. Keep your systems running smoothly.</p>
+            <ul class="service-features">
+              <li><i class="fas fa-check"></i> Regular Checkups</li>
+              <li><i class="fas fa-check"></i> Performance Tuning</li>
+              <li><i class="fas fa-check"></i> Security Updates</li>
+            </ul>
           </div>
         </div>
+      </div>
+    </section>
+
+    <!-- How it Works Section -->
+    <section class="how-it-works">
+      <div class="container">
+        <div class="section-header">
+          <h2>How It Works</h2>
+          <p>Get help in just a few simple steps</p>
+        </div>
+        <div class="steps">
+          <div class="step">
+            <div class="step-number">1</div>
+            <h3>Submit Request</h3>
+            <p>Describe your issue through our simple form. No account required for quick support.</p>
+          </div>
+          <div class="step">
+            <div class="step-number">2</div>
+            <h3>Get Matched</h3>
+            <p>We'll assign the best technician for your specific problem within minutes.</p>
+          </div>
+          <div class="step">
+            <div class="step-number">3</div>
+            <h3>Receive Support</h3>
+            <p>Get expert help via phone, remote access, or on-site visit as needed.</p>
+          </div>
+          <div class="step">
+            <div class="step-number">4</div>
+            <h3>Problem Solved</h3>
+            <p>Your issue is resolved quickly and professionally with follow-up support.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick Support CTA -->
+    <section class="knowledge-base-preview">
+      <div class="container">
+        <h2>Need Immediate Help?</h2>
+        <p>Don't wait - get expert support right now. No registration required for emergency assistance.</p>
+        <% if (!currentUser) { %>
+          <a href="/guest-support" class="btn btn-accent btn-lg">
+            <i class="fas fa-bolt"></i> Get Instant Support
+          </a>
+        <% } else { %>
+          <a href="/customer/support/new" class="btn btn-accent btn-lg">
+            <i class="fas fa-plus"></i> Create Support Request
+          </a>
+        <% } %>
       </div>
     </section>
 
     <!-- Features Section -->
-    <section class="features section bg-light">
+    <section class="testimonials">
       <div class="container">
-        <h2 class="section-title text-center">Why Choose Dern-Support?</h2>
-        <div class="features-grid">
-          <div class="feature">
-            <h3>24/7 Support</h3>
-            <p>Round-the-clock technical support when you need it most.</p>
-          </div>
-          <div class="feature">
-            <h3>Expert Technicians</h3>
-            <p>Certified professionals with years of experience.</p>
-          </div>
-          <div class="feature">
-            <h3>Fast Response</h3>
-            <p>Quick response times to minimize downtime.</p>
-          </div>
-          <div class="feature">
-            <h3>Transparent Pricing</h3>
-            <p>Clear, upfront pricing with no hidden fees.</p>
-          </div>
+        <div class="section-header">
+          <h2>Why Choose Dern-Support?</h2>
+          <p>Trusted by thousands of customers worldwide</p>
         </div>
-      </div>
-    </section>
-
-    <!-- CTA Section -->
-    <section class="cta section">
-      <div class="container">
-        <div class="cta-content text-center">
-          <h2>Need Technical Support?</h2>
-          <p>Get started with our professional IT support services today.</p>
-          <% if (currentUser) { %>
-            <a href="/customer/support/new" class="btn btn-primary btn-lg">Submit Support Request</a>
-          <% } else { %>
-            <a href="/signup" class="btn btn-primary btn-lg">Create Account</a>
-          <% } %>
+        <div class="testimonial-slider">
+          <div class="testimonial">
+            <div class="feature-grid">
+              <div class="feature-item">
+                <i class="fas fa-clock"></i>
+                <h3>24/7 Availability</h3>
+                <p>Round-the-clock technical support when you need it most. Emergency support available.</p>
+              </div>
+              <div class="feature-item">
+                <i class="fas fa-user-tie"></i>
+                <h3>Expert Technicians</h3>
+                <p>Certified professionals with years of experience in all major technologies.</p>
+              </div>
+              <div class="feature-item">
+                <i class="fas fa-tachometer-alt"></i>
+                <h3>Fast Response</h3>
+                <p>Average response time of 15 minutes. Quick resolution to minimize downtime.</p>
+              </div>
+              <div class="feature-item">
+                <i class="fas fa-shield-alt"></i>
+                <h3>Secure & Reliable</h3>
+                <p>Your data is safe with us. Secure remote access and confidential service.</p>
+              </div>
+              <div class="feature-item">
+                <i class="fas fa-dollar-sign"></i>
+                <h3>Transparent Pricing</h3>
+                <p>Clear, upfront pricing with no hidden fees. Know the cost before we start.</p>
+              </div>
+              <div class="feature-item">
+                <i class="fas fa-medal"></i>
+                <h3>Satisfaction Guaranteed</h3>
+                <p>100% satisfaction guarantee. We're not happy until you're happy.</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
