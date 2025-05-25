@@ -16,23 +16,44 @@
       <a href="/admin/support" class="btn btn-secondary btn-sm">Back to Support Requests</a>
     </div>
       
-      <div class="support-detail-container">
-        <div class="support-header">
-          <h2><%= supportRequest.title %></h2>
-          <div class="support-meta">
-            <span class="status <%= supportRequest.status %>">
-              <%= supportRequest.status.charAt(0).toUpperCase() + supportRequest.status.slice(1) %>
-            </span>
-            <span class="created-date">
-              Created: <%= new Date(supportRequest.createdAt).toLocaleDateString() %>
-            </span>
-          </div>
+    <div class="support-detail-container">
+      <div class="support-header">
+        <h2><%= supportRequest.title || supportRequest.requestType || 'Support Request' %></h2>
+        <div class="support-meta">
+          <span class="status <%= supportRequest.status %>">
+            <%= supportRequest.status.charAt(0).toUpperCase() + supportRequest.status.slice(1) %>
+          </span>
+          <span class="created-date">
+            Created: <%= new Date(supportRequest.createdAt).toLocaleDateString() %>
+          </span>
+          <% if (supportRequest.isGuestRequest) { %>
+            <span class="badge badge-info">Guest Request</span>
+          <% } %>
         </div>
-        
-        <!-- <div class="support-details">
-          <div class="detail-section">
-            <h3>Customer Information</h3>
-            <div class="customer-details">
+      </div>
+      
+      <div class="support-details">
+        <div class="detail-section">
+          <h3>Customer Information</h3>
+          <div class="customer-details">
+            <% if (supportRequest.isGuestRequest) { %>
+              <!-- Guest Request Information -->
+              <div class="customer-name">
+                <strong>Name:</strong> <%= supportRequest.guestName || 'Guest User' %>
+              </div>
+              <div class="customer-email">
+                <strong>Email:</strong> <%= supportRequest.guestEmail %>
+              </div>
+              <% if (supportRequest.guestPhone) { %>
+                <div class="customer-phone">
+                  <strong>Phone:</strong> <%= supportRequest.guestPhone %>
+                </div>
+              <% } %>
+              <div class="customer-type">
+                <strong>Type:</strong> Guest Request
+              </div>
+            <% } else if (supportRequest.customer) { %>
+              <!-- Registered Customer Information -->
               <div class="customer-name">
                 <strong>Name:</strong> <%= supportRequest.customer.firstName %> <%= supportRequest.customer.lastName %>
               </div>
@@ -50,337 +71,157 @@
               <div class="customer-actions">
                 <a href="/admin/customers/<%= supportRequest.customer._id %>" class="btn btn-secondary btn-sm">View Customer Profile</a>
               </div>
-            </div>
+            <% } else { %>
+              <!-- Fallback for missing customer data -->
+              <div class="customer-info">
+                <p class="text-muted">Customer information not available</p>
+              </div>
+            <% } %>
           </div>
-          
-          <div class="detail-section">
-            <h3>Issue Details</h3>
-            <div class="detail-grid">
+        </div>
+        
+        <div class="detail-section">
+          <h3>Issue Details</h3>
+          <div class="detail-grid">
+            <% if (supportRequest.deviceType) { %>
               <div class="detail-item">
                 <span class="detail-label">Device Type:</span>
                 <span class="detail-value"><%= supportRequest.deviceType %></span>
               </div>
-              
+            <% } %>
+            
+            <% if (supportRequest.urgency) { %>
               <div class="detail-item">
                 <span class="detail-label">Urgency:</span>
                 <span class="detail-value urgency <%= supportRequest.urgency %>">
                   <%= supportRequest.urgency.charAt(0).toUpperCase() + supportRequest.urgency.slice(1) %>
                 </span>
               </div>
-              
-              <% if (supportRequest.location) { %>
-                <div class="detail-item">
-                  <span class="detail-label">Location:</span>
-                  <span class="detail-value"><%= supportRequest.location %></span>
-                </div>
-              <% } %>
-              
+            <% } %>
+            
+            <% if (supportRequest.location) { %>
+              <div class="detail-item">
+                <span class="detail-label">Location:</span>
+                <span class="detail-value"><%= supportRequest.location %></span>
+              </div>
+            <% } %>
+            
+            <% if (supportRequest.estimatedCost) { %>
               <div class="detail-item">
                 <span class="detail-label">Estimated Cost:</span>
                 <span class="detail-value">$<%= supportRequest.estimatedCost.toFixed(2) %></span>
               </div>
+            <% } %>
+            
+            <% if (supportRequest.actualCost) { %>
+              <div class="detail-item">
+                <span class="detail-label">Final Cost:</span>
+                <span class="detail-value">$<%= supportRequest.actualCost.toFixed(2) %></span>
+              </div>
+            <% } %>
+          </div>
+        </div>
+        
+        <div class="detail-section">
+          <h3>Description</h3>
+          <div class="description">
+            <%= supportRequest.description %>
+          </div>
+        </div>
+        
+        <% if (supportRequest.appointmentDate) { %>
+          <div class="detail-section">
+            <h3>Appointment</h3>
+            <div class="appointment-details">
+              <div class="appointment-date">
+                <span class="detail-label">Date:</span>
+                <span class="detail-value">
+                  <%= new Date(supportRequest.appointmentDate).toLocaleDateString() %>
+                </span>
+              </div>
+              <div class="appointment-time">
+                <span class="detail-label">Time:</span>
+                <span class="detail-value">
+                  <%= new Date(supportRequest.appointmentDate).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) %>
+                </span>
+              </div>
+            </div>
+          </div>
+        <% } %>
+        
+        <% if (supportRequest.assignedTo) { %>
+          <div class="detail-section">
+            <h3>Assigned Technician</h3>
+            <div class="technician-details">
+              <%= supportRequest.assignedTo.firstName %> <%= supportRequest.assignedTo.lastName %>
+            </div>
+          </div>
+        <% } %>
+        
+        <% if (supportRequest.resolution) { %>
+          <div class="detail-section">
+            <h3>Resolution</h3>
+            <div class="resolution">
+              <%= supportRequest.resolution %>
+            </div>
+          </div>
+        <% } %>
+        
+        <% if (supportRequest.partsUsed && supportRequest.partsUsed.length > 0) { %>
+          <div class="detail-section">
+            <h3>Parts Used</h3>
+            <ul class="parts-list">
+              <% supportRequest.partsUsed.forEach(partUsed => { %>
+                <li>
+                  <% if (partUsed.part && partUsed.part.name) { %>
+                    <!-- Valid part reference -->
+                    <%= partUsed.part.name %> x <%= partUsed.quantity %>
+                    <span class="part-price">$<%= (partUsed.part.price * partUsed.quantity).toFixed(2) %></span>
+                  <% } else { %>
+                    <!-- Invalid or deleted part reference -->
+                    <span class="text-muted">Part (ID: <%= partUsed.part || 'Unknown' %>) - Deleted or Invalid</span> x <%= partUsed.quantity %>
+                    <span class="part-price text-muted">Price unavailable</span>
+                  <% } %>
+                </li>
+              <% }) %>
+            </ul>
+          </div>
+        <% } %>
+        
+        <% if (supportRequest.customerRating) { %>
+          <div class="detail-section">
+            <h3>Customer Feedback</h3>
+            <div class="feedback-details">
+              <div class="rating-display">
+                <div class="stars">
+                  <% for (let i = 1; i <= 5; i++) { %>
+                    <span class="star <%= i <= supportRequest.customerRating ? 'filled' : '' %>">★</span>
+                  <% } %>
+                </div>
+                <span class="rating-value"><%= supportRequest.customerRating %>/5</span>
+              </div>
               
-              <% if (supportRequest.actualCost) { %>
-                <div class="detail-item">
-                  <span class="detail-label">Final Cost:</span>
-                  <span class="detail-value">$<%= supportRequest.actualCost.toFixed(2) %></span>
+              <% if (supportRequest.customerFeedback) { %>
+                <div class="feedback-text">
+                  <p><%= supportRequest.customerFeedback %></p>
                 </div>
               <% } %>
             </div>
           </div>
-          
-          <div class="detail-section">
-            <h3>Description</h3>
-            <div class="description">
-              <%= supportRequest.description %>
-            </div>
-          </div>
-          
-          <% if (supportRequest.appointmentDate) { %>
-            <div class="detail-section">
-              <h3>Appointment</h3>
-              <div class="appointment-details">
-                <div class="appointment-date">
-                  <span class="detail-label">Date:</span>
-                  <span class="detail-value">
-                    <%= new Date(supportRequest.appointmentDate).toLocaleDateString() %>
-                  </span>
-                </div>
-                <div class="appointment-time">
-                  <span class="detail-label">Time:</span>
-                  <span class="detail-value">
-                    <%= new Date(supportRequest.appointmentDate).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) %>
-                  </span>
-                </div>
-              </div>
-            </div>
-          <% } %>
-          
-          <% if (supportRequest.assignedTo) { %>
-            <div class="detail-section">
-              <h3>Assigned Technician</h3>
-              <div class="technician-details">
-                <%= supportRequest.assignedTo.firstName %> <%= supportRequest.assignedTo.lastName %>
-              </div>
-            </div>
-          <% } %>
-          
-          <% if (supportRequest.resolution) { %>
-            <div class="detail-section">
-              <h3>Resolution</h3>
-              <div class="resolution">
-                <%= supportRequest.resolution %>
-              </div>
-            </div>
-          <% } %>
-          
-          <% if (supportRequest.partsUsed && supportRequest.partsUsed.length > 0) { %>
-            <div class="detail-section">
-              <h3>Parts Used</h3>
-              <ul class="parts-list">
-                <% supportRequest.partsUsed.forEach(part => { %>
-                  <li>
-                    <%= part.part.name %> x <%= part.quantity %>
-                    <span class="part-price">$<%= (part.part.price * part.quantity).toFixed(2) %></span>
-                  </li>
-                <% }) %>
-              </ul>
-            </div>
-          <% } %>
-          
-          <% if (supportRequest.customerRating) { %>
-            <div class="detail-section">
-              <h3>Customer Feedback</h3>
-              <div class="feedback-details">
-                <div class="rating-display">
-                  <div class="stars">
-                    <% for (let i = 1; i <= 5; i++) { %>
-                      <span class="star <%= i <= supportRequest.customerRating ? 'filled' : '' %>">★</span>
-                    <% } %>
-                  </div>
-                  <span class="rating-value"><%= supportRequest.customerRating %>/5</span>
-                </div>
-                
-                <% if (supportRequest.customerFeedback) { %>
-                  <div class="feedback-text">
-                    <p><%= supportRequest.customerFeedback %></p>
-                  </div>
-                <% } %>
-              </div>
-            </div>
-          <% } %>
-        </div> -->
-        
-        <!-- <div class="support-actions">
-          <form action="/admin/support/<%= supportRequest._id %>" method="POST" class="support-update-form">
-            <div class="form-section">
-              <h3>Update Support Request</h3>
-              
-              <div class="form-group">
-                <label for="status">Status</label>
-                <select id="status" name="status">
-                  <option value="pending" <%= supportRequest.status === 'pending' ? 'selected' : '' %>>Pending</option>
-                  <option value="assigned" <%= supportRequest.status === 'assigned' ? 'selected' : '' %>>Assigned</option>
-                  <option value="in-progress" <%= supportRequest.status === 'in-progress' ? 'selected' : '' %>>In Progress</option>
-                  <option value="resolved" <%= supportRequest.status === 'resolved' ? 'selected' : '' %>>Resolved</option>
-                  <option value="closed" <%= supportRequest.status === 'closed' ? 'selected' : '' %>>Closed</option>
-                </select>
-              </div>
-              
-              <div class="form-group">
-                <label for="assignedTo">Assign To</label>
-                <select id="assignedTo" name="assignedTo">
-                  <option value="">Unassigned</option>
-                  <% if (typeof technicians !== 'undefined') { %>
-                    <% technicians.forEach(tech => { %>
-                      <option value="<%= tech._id %>" <%= supportRequest.assignedTo && supportRequest.assignedTo._id.toString() === tech._id.toString() ? 'selected' : '' %>>
-                        <%= tech.firstName %> <%= tech.lastName %>
-                      </option>
-                    <% }) %>
-                  <% } %>
-                </select>
-              </div>
-              
-              <div class="form-group">
-                <label for="resolution">Resolution Notes</label>
-                <textarea id="resolution" name="resolution" rows="4"><%= supportRequest.resolution || '' %></textarea>
-              </div>
-              
-              <div class="form-row">
-                <div class="form-group">
-                  <label for="appointmentDate">Appointment Date</label>
-                  <input 
-                    type="date" 
-                    id="appointmentDate" 
-                    name="appointmentDate" 
-                    value="<%= supportRequest.appointmentDate ? new Date(supportRequest.appointmentDate).toISOString().split('T')[0] : '' %>"
-                  >
-                </div>
-                
-                <div class="form-group">
-                  <label for="appointmentTime">Appointment Time</label>
-                  <input 
-                    type="time" 
-                    id="appointmentTime" 
-                    name="appointmentTime" 
-                    value="<%= supportRequest.appointmentDate ? new Date(supportRequest.appointmentDate).toTimeString().slice(0, 5) : '' %>"
-                  >
-                </div>
-              </div>
-              
-              <div class="form-group">
-                <label for="actualCost">Actual Cost ($)</label>
-                <input 
-                  type="number" 
-                  id="actualCost" 
-                  name="actualCost" 
-                  step="0.01" 
-                  min="0" 
-                  value="<%= supportRequest.actualCost || '' %>"
-                >
-              </div>
-              
-              <div class="form-section">
-                <h4>Parts Used</h4>
-                <div id="partsContainer">
-                  <% if (supportRequest.partsUsed && supportRequest.partsUsed.length > 0) { %>
-                    <% supportRequest.partsUsed.forEach((partUsed, index) => { %>
-                      <div class="part-row">
-                        <div class="form-row">
-                          <div class="form-group">
-                            <label for="partIds<%= index %>">Part</label>
-                            <select id="partIds<%= index %>" name="partIds[]">
-                              <option value="">Select Part</option>
-                              <% if (typeof availableParts !== 'undefined') { %>
-                                <% availableParts.forEach(part => { %>
-                                  <option value="<%= part._id %>" <%= partUsed.part._id.toString() === part._id.toString() ? 'selected' : '' %>>
-                                    <%= part.name %> ($<%= part.price.toFixed(2) %>)
-                                  </option>
-                                <% }) %>
-                              <% } %>
-                            </select>
-                          </div>
-                          
-                          <div class="form-group">
-                            <label for="partQuantities<%= index %>">Quantity</label>
-                            <input 
-                              type="number" 
-                              id="partQuantities<%= index %>" 
-                              name="partQuantities[]" 
-                              min="1" 
-                              value="<%= partUsed.quantity %>"
-                            >
-                          </div>
-                        </div>
-                      </div>
-                    <% }) %>
-                  <% } else { %>
-                    <div class="part-row">
-                      <div class="form-row">
-                        <div class="form-group">
-                          <label for="partIds0">Part</label>
-                          <select id="partIds0" name="partIds[]">
-                            <option value="">Select Part</option>
-                            <% if (typeof availableParts !== 'undefined') { %>
-                              <% availableParts.forEach(part => { %>
-                                <option value="<%= part._id %>">
-                                  <%= part.name %> ($<%= part.price.toFixed(2) %>)
-                                </option>
-                              <% }) %>
-                            <% } %>
-                          </select>
-                        </div>
-                        
-                        <div class="form-group">
-                          <label for="partQuantities0">Quantity</label>
-                          <input 
-                            type="number" 
-                            id="partQuantities0" 
-                            name="partQuantities[]" 
-                            min="1" 
-                            value="1"
-                          >
-                        </div>
-                      </div>
-                    </div>
-                  <% } %>
-                </div>
-                
-                <button type="button" id="addPartBtn" class="btn btn-secondary btn-sm">Add Another Part</button>
-              </div>
-              
-              <div class="form-actions">
-                <button type="submit" class="btn btn-primary">Update Support Request</button>
-              </div>
-            </div>
-          </form>
-        </div> -->
+        <% } %>
       </div>
+      
+      <% if (!viewOnly) { %>
+        <div class="support-actions">
+          <div class="alert alert-info">
+            <strong>Note:</strong> This is a view-only interface for admin users. Contact a Master administrator to make changes.
+          </div>
+        </div>
+      <% } %>
     </div>
   </div>
   
   <%- include('../partials/admin-footer') %>
-  
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Add part button functionality
-      const addPartBtn = document.getElementById('addPartBtn');
-      const partsContainer = document.getElementById('partsContainer');
-      
-      if (addPartBtn && partsContainer) {
-        addPartBtn.addEventListener('click', function() {
-          const partRows = partsContainer.querySelectorAll('.part-row');
-          const newIndex = partRows.length;
-          
-          const newPartRow = document.createElement('div');
-          newPartRow.className = 'part-row';
-          
-          // Clone the first part row and update IDs and values
-          const firstPartRow = partRows[0];
-          newPartRow.innerHTML = firstPartRow.innerHTML;
-          
-          // Update IDs and labels
-          const selects = newPartRow.querySelectorAll('select');
-          const inputs = newPartRow.querySelectorAll('input');
-          const labels = newPartRow.querySelectorAll('label');
-          
-          selects.forEach(select => {
-            const oldId = select.id;
-            const newId = oldId.replace(/\d+/, newIndex);
-            select.id = newId;
-            select.value = '';
-          });
-          
-          inputs.forEach(input => {
-            const oldId = input.id;
-            const newId = oldId.replace(/\d+/, newIndex);
-            input.id = newId;
-            input.value = '1';
-          });
-          
-          labels.forEach(label => {
-            const oldFor = label.getAttribute('for');
-            const newFor = oldFor.replace(/\d+/, newIndex);
-            label.setAttribute('for', newFor);
-          });
-          
-          // Add remove button
-          const removeBtn = document.createElement('button');
-          removeBtn.type = 'button';
-          removeBtn.className = 'btn btn-danger btn-sm remove-part-btn';
-          removeBtn.textContent = 'Remove';
-          removeBtn.addEventListener('click', function() {
-            newPartRow.remove();
-          });
-          
-          newPartRow.appendChild(removeBtn);
-          
-          // Add the new row
-          partsContainer.appendChild(newPartRow);
-        });
-      }
-    });
-  </script>
   
   <script src="/js/main.js"></script>
 </body>

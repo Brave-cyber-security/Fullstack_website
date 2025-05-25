@@ -4,6 +4,8 @@ import User from "../models/User.js"
 import SupportRequest from "../models/SupportRequest.js"
 import SparePart from "../models/SparePart.js"
 import KnowledgeBase from "../models/KnowledgeBase.js"
+import { sendGuestApprovalNotification, sendGuestRejectionNotification } from '../utils/emailservice.js'
+
 
 const router = express.Router()
 
@@ -173,7 +175,7 @@ router.get("/support/:id", async (req, res) => {
   }
 })
 
-// Master approval/rejection of support requests
+// Master approval/rejection of support requests with email notifications
 router.post("/support/:id/approve", async (req, res) => {
   try {
     const { action, masterSetPrice, masterComments, rejectionReason } = req.body
@@ -191,14 +193,46 @@ router.post("/support/:id/approve", async (req, res) => {
       supportRequest.masterSetPrice = masterSetPrice ? Number.parseFloat(masterSetPrice) : null
       supportRequest.masterComments = masterComments
       supportRequest.status = "pending" // Move to pending for admin assignment
+
+      await supportRequest.save()
+
+      // Send email notification for guest requests
+      if (supportRequest.isGuestRequest) {
+        try {
+          const emailResult = await sendGuestApprovalNotification(supportRequest)
+          if (emailResult.success) {
+            console.log(`✅ Approval email sent to guest: ${supportRequest.guestEmail}`)
+          } else {
+            console.error(`❌ Failed to send approval email: ${emailResult.error}`)
+          }
+        } catch (emailError) {
+          console.error("Email notification error:", emailError)
+          // Don't fail the approval process if email fails
+        }
+      }
     } else if (action === "reject") {
       supportRequest.approvalStatus = "rejected"
       supportRequest.rejectionReason = rejectionReason
       supportRequest.masterComments = masterComments
       supportRequest.status = "closed"
-    }
 
-    await supportRequest.save()
+      await supportRequest.save()
+
+      // Send email notification for guest requests
+      if (supportRequest.isGuestRequest) {
+        try {
+          const emailResult = await sendGuestRejectionNotification(supportRequest)
+          if (emailResult.success) {
+            console.log(`✅ Rejection email sent to guest: ${supportRequest.guestEmail}`)
+          } else {
+            console.error(`❌ Failed to send rejection email: ${emailResult.error}`)
+          }
+        } catch (emailError) {
+          console.error("Email notification error:", emailError)
+          // Don't fail the rejection process if email fails
+        }
+      }
+    }
 
     res.redirect(`/master/support/${supportRequest._id}`)
   } catch (error) {

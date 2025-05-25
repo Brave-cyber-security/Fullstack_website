@@ -35,15 +35,12 @@ router.get("/dashboard", async (req, res) => {
       appointmentDate: { $gte: today, $lt: tomorrow },
     }).populate("customer", "firstName lastName email phone")
 
-    // Get recent support requests
+    // Get recent support requests (including guest requests)
     const recentRequests = await SupportRequest.find()
       .sort({ createdAt: -1 })
       .limit(5)
       .populate("customer", "firstName lastName email")
       .lean()
-
-    // Filter out requests with missing customers
-    const validRecentRequests = recentRequests.filter((request) => request.customer)
 
     res.render("admin/dashboard", {
       pendingRequestsCount,
@@ -52,7 +49,7 @@ router.get("/dashboard", async (req, res) => {
       customersCount,
       lowStockParts,
       todayAppointments,
-      recentRequests: validRecentRequests,
+      recentRequests,
       user: req.session.user,
       isAdmin: true,
       isMaster: false,
@@ -156,7 +153,11 @@ router.get("/support/:id", async (req, res) => {
       .populate("customer", "firstName lastName email phone businessName accountType")
       .populate("assignedTo", "firstName lastName email")
       .populate("masterApprovedBy", "firstName lastName email")
-      .populate("partsUsed.part")
+      .populate({
+        path: "partsUsed.part",
+        model: "SparePart",
+        select: "name price category",
+      })
 
     if (!supportRequest) {
       return res.status(404).render("error", { error: "Support request not found" })
@@ -310,7 +311,7 @@ router.get("/parts/new", (req, res) => {
 
 router.post("/parts", (req, res) => {
   res.status(403).render("error", {
-    error: "Add functionality is disabled for admin role. Contact a Master administrator.",
+    error: "Edit functionality is disabled for admin role. Contact a Master administrator.",
   })
 })
 
