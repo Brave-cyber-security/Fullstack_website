@@ -1,8 +1,5 @@
-\
-Let's update the SupportRequest model to handle guest requests:
 
-```js file="models/SupportRequest.js"
-[v0-no-op-code-block-prefix]
+
 const mongoose = require("mongoose")
 
 const SupportRequestSchema = new mongoose.Schema({

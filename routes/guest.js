@@ -81,4 +81,4 @@ router.post("/guest-support", async (req, res) => {
   }
 })
 
-export const guestRoutes = router
+export { router as guestRoutes }
