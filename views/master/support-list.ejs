@@ -91,7 +91,6 @@
                                             <th>Urgency</th>
                                             <th>Status</th>
                                             <th>Approval</th>
-                                            <th>Assigned To</th>
                                             <th>Created</th>
                                             <th>Actions</th>
                                         </tr>
@@ -113,7 +112,7 @@
                                                 </td>
                                                 <td>
                                                     <strong><%= request.title %></strong>
-                                                    <br><small class="text-muted"><%= request.description.substring(0, 50) %>...</small>
+                                                    <br>
                                                 </td>
                                                 <td><span class="badge badge-info"><%= request.deviceType %></span></td>
                                                 <td>
@@ -131,13 +130,7 @@
                                                         <%= request.approvalStatus.replace('_', ' ') %>
                                                     </span>
                                                 </td>
-                                                <td>
-                                                    <% if (request.assignedTo) { %>
-                                                        <%= request.assignedTo.firstName %> <%= request.assignedTo.lastName %>
-                                                    <% } else { %>
-                                                        <span class="text-muted">Unassigned</span>
-                                                    <% } %>
-                                                </td>
+                    
                                                 <td><%= new Date(request.createdAt).toLocaleDateString() %></td>
                                                 <td>
                                                     <a href="/master/support/<%= request._id %>" class="btn btn-sm btn-outline-primary">View</a>

@@ -3,6 +3,7 @@
 <head>
   <title>Customer Dashboard</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/styles.css">
   <style>
     .support-requests-list {
       margin-top: 20px;
@@ -85,8 +86,9 @@
   </style>
 </head>
 <body>
+    <%- include('../partials/header') %>
+
   <div class="container">
-    <h1>Customer Dashboard</h1>
 
     <div class="dashboard-actions">
       <a href="/customer/support/new" class="btn btn-primary">New Support Request</a>
