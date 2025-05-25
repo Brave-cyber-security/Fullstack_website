@@ -5,16 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Support Request Details - Dern-Support Admin</title>
   <link rel="stylesheet" href="/css/styles.css">
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-  <%- include('../partials/header') %>
+  <%- include('../partials/admin-header', { currentPage: 'support' }) %>
   
-  <main class="support-detail-page">
-    <div class="container">
-      <div class="page-header">
-        <h1>Support Request Details</h1>
-        <a href="/admin/support" class="btn btn-secondary btn-sm">Back to Support Requests</a>
-      </div>
+  <div class="dashboard-content">
+    <div class="page-header">
+      <h1>Support Request Details</h1>
+      <a href="/admin/support" class="btn btn-secondary btn-sm">Back to Support Requests</a>
+    </div>
       
       <div class="support-detail-container">
         <div class="support-header">
@@ -317,9 +317,9 @@
         </div>
       </div>
     </div>
-  </main>
+  </div>
   
-  <%- include('../partials/footer') %>
+  <%- include('../partials/admin-footer') %>
   
   <script>
     document.addEventListener('DOMContentLoaded', function() {

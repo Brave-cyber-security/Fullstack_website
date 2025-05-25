@@ -6,319 +6,215 @@
     <title><%= title %> - Dern Support</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/styles.css">
-    <style>
-        .master-dashboard {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px 0;
-        }
-        .dashboard-card {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-            padding: 20px;
-        }
-        .stat-card {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-            border-radius: 10px;
-            padding: 20px;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .stat-value {
-            font-size: 2.5rem;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        .stat-label {
-            font-size: 0.9rem;
-            opacity: 0.9;
-        }
-        .approval-badge {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: bold;
-        }
-        .approval-pending { background: #ffc107; color: #000; }
-        .approval-approved { background: #28a745; color: #fff; }
-        .approval-rejected { background: #dc3545; color: #fff; }
-    </style>
 </head>
-<body class="master-dashboard">
-    <%- include('../partials/header') %>
+<body>
+    <%- include('../partials/master-header', { currentPage: 'dashboard' }) %>
     
-    <div class="container-fluid">
+    <div class="dashboard-content">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h1 class="h2">Master Dashboard</h1>
+            <div class="text-muted">
+                <small>Total System Overview</small>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
         <div class="row">
-            <!-- Sidebar -->
-            <nav class="col-md-2 d-none d-md-block sidebar" style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);">
-                <div class="sidebar-sticky">
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link active text-white" href="/master/dashboard">
-                                <i class="fas fa-tachometer-alt"></i> Dashboard
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="/master/support">
-                                <i class="fas fa-headset"></i> All Support Requests
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="/master/users">
-                                <i class="fas fa-users"></i> User Management
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="/master/settings">
-                                <i class="fas fa-cog"></i> System Settings
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="/master/logs">
-                                <i class="fas fa-file-alt"></i> System Logs
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="/admin/dashboard">
-                                <i class="fas fa-user-shield"></i> Admin View
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-
-            <!-- Main Content -->
-            <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
-                    <h1 class="h2 text-white">Master Dashboard</h1>
-                    <div class="text-white">
-                        <small>Total System Overview</small>
-                    </div>
-                </div>
-
-                <!-- Statistics Cards -->
-                <div class="row">
-                    <div class="col-md-3">
-                        <div class="stat-card">
-                            <div class="stat-value"><%= totalRequests %></div>
-                            <div class="stat-label">Total Requests</div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="stat-card">
-                            <div class="stat-value"><%= pendingApprovalCount %></div>
-                            <div class="stat-label">Pending Approval</div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="stat-card">
-                            <div class="stat-value"><%= totalUsers %></div>
-                            <div class="stat-label">Total Users</div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="stat-card">
-                            <div class="stat-value"><%= totalKnowledgeArticles %></div>
-                            <div class="stat-label">KB Articles</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- User Statistics -->
-                <div class="row">
-                    <div class="col-md-3">
-                        <div class="dashboard-card">
-                            <h6>Customers</h6>
-                            <h3 class="text-primary"><%= totalCustomers %></h3>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="dashboard-card">
-                            <h6>Administrators</h6>
-                            <h3 class="text-success"><%= totalAdmins %></h3>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="dashboard-card">
-                            <h6>Masters</h6>
-                            <h3 class="text-warning"><%= totalMasters %></h3>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="dashboard-card">
-                            <h6>Low Stock Parts</h6>
-                            <h3 class="text-danger"><%= lowStockParts.length %></h3>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Pending Approval Requests -->
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="dashboard-card">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h5>Requests Pending Master Approval</h5>
-                                <a href="/master/support?approvalStatus=pending_approval" class="btn btn-primary btn-sm">View All</a>
+            <div class="col-md-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4><%= totalRequests %></h4>
+                                <p>Total Requests</p>
                             </div>
-                            
-                            <% if (pendingApprovalRequests.length === 0) { %>
-                                <div class="text-center text-muted py-4">
-                                    <p>No requests pending approval.</p>
-                                </div>
-                            <% } else { %>
-                                <div class="table-responsive">
-                                    <table class="table table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th>Request ID</th>
-                                                <th>Customer</th>
-                                                <th>Title</th>
-                                                <th>Device Type</th>
-                                                <th>Urgency</th>
-                                                <th>Created</th>
-                                                <th>Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <% pendingApprovalRequests.forEach(request => { %>
-                                                <tr>
-                                                    <td><code><%= request._id.toString().slice(-6) %></code></td>
-                                                    <td>
-                                                        <% if (request.customer) { %>
-                                                            <%= request.customer.firstName %> <%= request.customer.lastName %>
-                                                        <% } else { %>
-                                                            <span class="text-muted">Customer Deleted</span>
-                                                        <% } %>
-                                                    </td>
-                                                    <td><%= request.title %></td>
-                                                    <td><span class="badge badge-info"><%= request.deviceType %></span></td>
-                                                    <td>
-                                                        <span class="badge badge-<%= request.urgency === 'critical' ? 'danger' : request.urgency === 'high' ? 'warning' : request.urgency === 'medium' ? 'info' : 'secondary' %>">
-                                                            <%= request.urgency %>
-                                                        </span>
-                                                    </td>
-                                                    <td><%= new Date(request.createdAt).toLocaleDateString() %></td>
-                                                    <td>
-                                                        <a href="/master/support/<%= request._id %>" class="btn btn-sm btn-outline-primary">Review</a>
-                                                    </td>
-                                                </tr>
-                                            <% }) %>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            <% } %>
+                            <div class="align-self-center">
+                                <i class="fas fa-headset fa-2x"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
-
-                <!-- All Support Requests Overview -->
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="dashboard-card">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h5>Recent Support Requests (All)</h5>
-                                <a href="/master/support" class="btn btn-primary btn-sm">View All</a>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-warning text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4><%= pendingApprovalCount %></h4>
+                                <p>Pending Approval</p>
                             </div>
-                            
-                            <% if (allSupportRequests.length === 0) { %>
-                                <div class="text-center text-muted py-4">
-                                    <p>No support requests found.</p>
-                                </div>
-                            <% } else { %>
-                                <div class="table-responsive">
-                                    <table class="table table-hover">
-                                        <thead>
+                            <div class="align-self-center">
+                                <i class="fas fa-clock fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-info text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4><%= totalUsers %></h4>
+                                <p>Total Users</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-users fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4><%= totalKnowledgeArticles %></h4>
+                                <p>KB Articles</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-book fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Statistics -->
+        <div class="row mt-4">
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h6>Customers</h6>
+                        <h3 class="text-primary"><%= totalCustomers %></h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h6>Administrators</h6>
+                        <h3 class="text-success"><%= totalAdmins %></h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h6>Masters</h6>
+                        <h3 class="text-warning"><%= totalMasters %></h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h6>Low Stock Parts</h6>
+                        <h3 class="text-danger"><%= lowStockParts.length %></h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Approval Requests -->
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5>Requests Pending Master Approval</h5>
+                        <a href="/master/support?approvalStatus=pending_approval" class="btn btn-primary btn-sm">View All</a>
+                    </div>
+                    <div class="card-body">
+                        <% if (pendingApprovalRequests.length === 0) { %>
+                            <div class="text-center text-muted py-4">
+                                <p>No requests pending approval.</p>
+                            </div>
+                        <% } else { %>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Request ID</th>
+                                            <th>Customer</th>
+                                            <th>Title</th>
+                                            <th>Device Type</th>
+                                            <th>Urgency</th>
+                                            <th>Created</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% pendingApprovalRequests.forEach(request => { %>
                                             <tr>
-                                                <th>ID</th>
-                                                <th>Customer</th>
-                                                <th>Title</th>
-                                                <th>Status</th>
-                                                <th>Approval</th>
-                                                <th>Assigned To</th>
-                                                <th>Created</th>
-                                                <th>Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <% allSupportRequests.forEach(request => { %>
-                                                <tr>
-                                                    <td><code><%= request._id.toString().slice(-6) %></code></td>
-                                                    <td>
+                                                <td><code><%= request._id.toString().slice(-6) %></code></td>
+                                                <td>
+                                                    <% if (request.customer) { %>
                                                         <%= request.customer.firstName %> <%= request.customer.lastName %>
-                                                        <% if (request.customer.businessName) { %>
-                                                            <br><small class="text-muted"><%= request.customer.businessName %></small>
-                                                        <% } %>
-                                                    </td>
-                                                    <td><%= request.title %></td>
-                                                    <td>
-                                                        <span class="badge badge-<%= request.status === 'resolved' ? 'success' : request.status === 'in-progress' ? 'warning' : request.status === 'pending' ? 'info' : 'secondary' %>">
-                                                            <%= request.status %>
-                                                        </span>
-                                                    </td>
-                                                    <td>
-                                                        <span class="approval-badge approval-<%= (request.approvalStatus || 'pending_approval').replace('_', '-') %>">
-                                                            <%= (request.approvalStatus || 'pending_approval').replace('_', ' ') %>
-                                                        </span>
-                                                    </td>
-                                                    <td>
-                                                        <% if (request.assignedTo) { %>
-                                                            <%= request.assignedTo.firstName %> <%= request.assignedTo.lastName %>
-                                                        <% } else { %>
-                                                            <span class="text-muted">Unassigned</span>
-                                                        <% } %>
-                                                    </td>
-                                                    <td><%= new Date(request.createdAt).toLocaleDateString() %></td>
-                                                    <td>
-                                                        <a href="/master/support/<%= request._id %>" class="btn btn-sm btn-outline-primary">View</a>
-                                                    </td>
-                                                </tr>
-                                            <% }) %>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            <% } %>
-                        </div>
+                                                    <% } else { %>
+                                                        <span class="text-muted">Customer Deleted</span>
+                                                    <% } %>
+                                                </td>
+                                                <td><%= request.title %></td>
+                                                <td><span class="badge badge-info"><%= request.deviceType %></span></td>
+                                                <td>
+                                                    <span class="badge badge-<%= request.urgency === 'critical' ? 'danger' : request.urgency === 'high' ? 'warning' : request.urgency === 'medium' ? 'info' : 'secondary' %>">
+                                                        <%= request.urgency %>
+                                                    </span>
+                                                </td>
+                                                <td><%= new Date(request.createdAt).toLocaleDateString() %></td>
+                                                <td>
+                                                    <a href="/master/support/<%= request._id %>" class="btn btn-sm btn-outline-primary">Review</a>
+                                                </td>
+                                            </tr>
+                                        <% }) %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <% } %>
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <!-- Quick Actions -->
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="dashboard-card">
-                            <h5>Quick Actions</h5>
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <a href="/master/support?approvalStatus=pending_approval" class="btn btn-warning btn-block">
-                                        Review Pending Approvals
-                                    </a>
-                                </div>
-                                <div class="col-md-3">
-                                    <a href="/master/users" class="btn btn-info btn-block">
-                                        Manage Users
-                                    </a>
-                                </div>
-                                <div class="col-md-3">
-                                    <a href="/master/settings" class="btn btn-secondary btn-block">
-                                        System Settings
-                                    </a>
-                                </div>
-                                <div class="col-md-3">
-                                    <a href="/admin/analytics" class="btn btn-success btn-block">
-                                        View Analytics
-                                    </a>
-                                </div>
+        <!-- Quick Actions -->
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Quick Actions</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <a href="/master/support?approvalStatus=pending_approval" class="btn btn-warning btn-block">
+                                    Review Pending Approvals
+                                </a>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="/master/users" class="btn btn-info btn-block">
+                                    Manage Users
+                                </a>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="/master/settings" class="btn btn-secondary btn-block">
+                                    System Settings
+                                </a>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="/admin/analytics" class="btn btn-success btn-block">
+                                    View Analytics
+                                </a>
                             </div>
                         </div>
                     </div>
                 </div>
-            </main>
+            </div>
         </div>
     </div>
 
-    <%- include('../partials/footer') %>
+    <%- include('../partials/master-footer') %>
     
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>

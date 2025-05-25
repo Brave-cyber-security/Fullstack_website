@@ -1,8 +1,11 @@
-<% if (isAdmin && !isMaster) { %>
+<% if (typeof isAdmin !== 'undefined' && isAdmin && !isMaster) { %>
   <!-- Admin users get the sidebar layout -->
-  <!-- This will be handled by admin-header.ejs -->
+  <%- include('admin-header', { currentPage: typeof currentPage !== 'undefined' ? currentPage : '' }) %>
+<% } else if (typeof isMaster !== 'undefined' && isMaster) { %>
+  <!-- Master users get the master sidebar layout -->
+  <%- include('master-header', { currentPage: typeof currentPage !== 'undefined' ? currentPage : '' }) %>
 <% } else { %>
-  <!-- Regular users and masters get the traditional navbar -->
+  <!-- Regular users and customers get the traditional navbar -->
   <header class="header">
     <nav class="navbar">
       <div class="container">
@@ -17,10 +20,10 @@
             <li><a href="/">Home</a></li>
             <li><a href="/#services">Services</a></li>
             <li><a href="/knowledge/search">Knowledge Base</a></li>
-            <% if (currentUser) { %>
-              <% if (isMaster) { %>
+            <% if (typeof currentUser !== 'undefined' && currentUser) { %>
+              <% if (typeof isMaster !== 'undefined' && isMaster) { %>
                 <li><a href="/master/dashboard">Master Dashboard</a></li>
-              <% } else if (isAdmin) { %>
+              <% } else if (typeof isAdmin !== 'undefined' && isAdmin) { %>
                 <li><a href="/admin/dashboard">Admin Dashboard</a></li>
               <% } else { %>
                 <li><a href="/customer/dashboard">Dashboard</a></li>

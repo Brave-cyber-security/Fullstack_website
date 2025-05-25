@@ -1,0 +1,65 @@
+<header class="master-header">
+  <nav class="master-navbar">
+    <div class="container-fluid">
+      <div class="navbar-brand">
+        <a href="/master/dashboard" class="brand-link">
+          <h1>Dern-Support Master</h1>
+        </a>
+      </div>
+      
+      <div class="master-nav-right">
+        <div class="user-info">
+          <span class="user-name">Welcome, Master</span>
+          <a href="/logout" class="btn btn-sm btn-outline-light">Logout</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<!-- Master Sidebar -->
+<div class="master-layout">
+  <aside class="master-sidebar">
+    <div class="sidebar-content">
+      <ul class="sidebar-nav">
+        <li class="nav-item">
+          <a href="/master/dashboard" class="nav-link <%= currentPage === 'dashboard' ? 'active' : '' %>">
+            <i class="fas fa-tachometer-alt"></i>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/master/support" class="nav-link <%= currentPage === 'support' ? 'active' : '' %>">
+            <i class="fas fa-headset"></i>
+            <span>All Support Requests</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/master/users" class="nav-link <%= currentPage === 'users' ? 'active' : '' %>">
+            <i class="fas fa-users"></i>
+            <span>User Management</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/master/settings" class="nav-link <%= currentPage === 'settings' ? 'active' : '' %>">
+            <i class="fas fa-cog"></i>
+            <span>System Settings</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/master/logs" class="nav-link <%= currentPage === 'logs' ? 'active' : '' %>">
+            <i class="fas fa-file-alt"></i>
+            <span>System Logs</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/admin/dashboard" class="nav-link">
+            <i class="fas fa-user-shield"></i>
+            <span>Admin View</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </aside>
+  
+  <main class="master-main">
