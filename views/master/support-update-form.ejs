@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support Request Details - Dern Support</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <%- include('../partials/admin-header', { currentPage: 'support' }) %>
+    
+    <div class="support-detail-content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Support Request Details</h1>
+            <div>
+                <a href="/admin/support" class="btn btn-secondary">Back to List</a>
+                <% if (isMaster) { %>
+                    <a href="/master/support/<%= supportRequest._id %>" class="btn btn-primary">Master View</a>
+                <% } %>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Request Information -->
+            <div class="col-md-8">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>Request Information</h5>
+                        <span class="badge badge-<%= supportRequest.status === 'resolved' ? 'success' : supportRequest.status === 'in-progress' ? 'warning' : 'info' %>">
+                            <%= supportRequest.status.toUpperCase() %>
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Request ID:</strong> <code><%= supportRequest._id.toString().slice(-8) %></code></p>
+                                <p><strong>Title:</strong> <%= supportRequest.title %></p>
+                                <p><strong>Device Type:</strong> <%= supportRequest.deviceType %></p>
+                                <p><strong>Urgency:</strong> 
+                                    <span class="badge badge-<%= supportRequest.urgency === 'high' ? 'danger' : supportRequest.urgency === 'medium' ? 'warning' : 'secondary' %>">
+                                        <%= supportRequest.urgency %>
+                                    </span>
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Created:</strong> <%= new Date(supportRequest.createdAt).toLocaleString() %></p>
+                                <p><strong>Location:</strong> <%= supportRequest.location || 'Not specified' %></p>
+                                <p><strong>Estimated Cost:</strong> $<%= supportRequest.estimatedCost.toFixed(2) %></p>
+                                <% if (supportRequest.actualCost) { %>
+                                    <p><strong>Actual Cost:</strong> $<%= supportRequest.actualCost.toFixed(2) %></p>
+                                <% } %>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <h6>Description:</h6>
+                            <p class="text-muted"><%= supportRequest.description %></p>
+                        </div>
+
+                        <% if (supportRequest.resolution) { %>
+                            <div class="mt-3">
+                                <h6>Resolution:</h6>
+                                <p class="text-success"><%= supportRequest.resolution %></p>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+
+                <!-- Parts Used (View Only) -->
+                <% if (supportRequest.partsUsed && supportRequest.partsUsed.length > 0) { %>
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5>Parts Used</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Part Name</th>
+                                            <th>Category</th>
+                                            <th>Quantity</th>
+                                            <th>Unit Price</th>
+                                            <th>Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% supportRequest.partsUsed.forEach(partUsed => { %>
+                                            <tr>
+                                                <td><%= partUsed.part.name %></td>
+                                                <td><%= partUsed.part.category %></td>
+                                                <td><%= partUsed.quantity %></td>
+                                                <td>$<%= partUsed.part.price.toFixed(2) %></td>
+                                                <td>$<%= (partUsed.quantity * partUsed.part.price).toFixed(2) %></td>
+                                            </tr>
+                                        <% }) %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                <% } %>
+            </div>
+
+            <!-- Customer & Assignment Information -->
+            <div class="col-md-4">
+                <!-- Customer Information -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>Customer Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <% if (supportRequest.customer) { %>
+                            <p><strong>Name:</strong> <%= supportRequest.customer.firstName %> <%= supportRequest.customer.lastName %></p>
+                            <p><strong>Email:</strong> <%= supportRequest.customer.email %></p>
+                            <p><strong>Phone:</strong> <%= supportRequest.customer.phone %></p>
+                            <p><strong>Account Type:</strong> <%= supportRequest.customer.accountType %></p>
+                            <% if (supportRequest.customer.businessName) { %>
+                                <p><strong>Business:</strong> <%= supportRequest.customer.businessName %></p>
+                            <% } %>
+                        <% } else { %>
+                            <p class="text-muted">Customer information not available</p>
+                        <% } %>
+                    </div>
+                </div>
+
+                <!-- Assignment Information -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>Assignment</h5>
+                    </div>
+                    <div class="card-body">
+                        <% if (supportRequest.assignedTo) { %>
+                            <p><strong>Assigned To:</strong> <%= supportRequest.assignedTo.firstName %> <%= supportRequest.assignedTo.lastName %></p>
+                            <p><strong>Email:</strong> <%= supportRequest.assignedTo.email %></p>
+                        <% } else { %>
+                            <p class="text-muted">Not assigned to any technician</p>
+                        <% } %>
+                        
+                        <% if (supportRequest.appointmentDate) { %>
+                            <p><strong>Appointment:</strong> <%= new Date(supportRequest.appointmentDate).toLocaleString() %></p>
+                        <% } %>
+                    </div>
+                </div>
+
+                <!-- Approval Status -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>Approval Status</h5>
+                    </div>
+                    <div class="card-body">
+                        <% 
+                            const approvalStatus = supportRequest.approvalStatus || 'pending_approval';
+                            const statusClass = approvalStatus === 'approved' ? 'success' : 
+                                              approvalStatus === 'rejected' ? 'danger' : 'warning';
+                        %>
+                        <p><strong>Status:</strong> 
+                            <span class="badge badge-<%= statusClass %>">
+                                <%= approvalStatus.replace('_', ' ').toUpperCase() %>
+                            </span>
+                        </p>
+                        
+                        <% if (supportRequest.masterSetPrice) { %>
+                            <p><strong>Master Set Price:</strong> $<%= supportRequest.masterSetPrice.toFixed(2) %></p>
+                        <% } %>
+                        
+                        <% if (supportRequest.masterApprovedBy) { %>
+                            <p><strong>Approved By:</strong> <%= supportRequest.masterApprovedBy.firstName %> <%= supportRequest.masterApprovedBy.lastName %></p>
+                        <% } %>
+                        
+                        <% if (supportRequest.rejectionReason) { %>
+                            <p><strong>Rejection Reason:</strong> <%= supportRequest.rejectionReason %></p>
+                        <% } %>
+                    </div>
+                </div>
+
+                <!-- Admin Note -->
+                <div class="alert alert-info">
+                    <h6><i class="fas fa-info-circle"></i> Admin View</h6>
+                    <p class="mb-0">You are viewing this request in read-only mode. To make changes, contact a Master administrator.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <%- include('../partials/admin-footer') %>
+    
+    <script src="/js/main.js"></script>
+</body>
+</html>

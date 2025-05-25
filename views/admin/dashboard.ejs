@@ -5,43 +5,53 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard - Dern-Support</title>
   <link rel="stylesheet" href="/css/styles.css">
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-  <%- include('../partials/header') %>
+  <%- include('../partials/admin-header', { currentPage: 'dashboard' }) %>
   
-  <main class="admin-dashboard section">
-    <div class="container">
-      <div class="dashboard-header">
-        <h1>Admin Dashboard</h1>
-      </div>
-      
-      <div class="stats-cards">
+  <div class="dashboard-content">
+    <div class="dashboard-header">
+      <h1>Admin Dashboard</h1>
+      <p class="text-muted">View-only access to system data</p>
+    </div>
+    
+    <div class="stats-cards row">
+      <div class="col-md-3">
         <div class="stat-card">
           <div class="stat-value"><%= pendingRequestsCount %></div>
           <div class="stat-label">Pending Requests</div>
           <a href="/admin/support?status=pending" class="stat-link">View All</a>
         </div>
-        
+      </div>
+      
+      <div class="col-md-3">
         <div class="stat-card">
           <div class="stat-value"><%= inProgressRequestsCount %></div>
           <div class="stat-label">In Progress</div>
           <a href="/admin/support?status=in-progress" class="stat-link">View All</a>
         </div>
-        
+      </div>
+      
+      <div class="col-md-3">
         <div class="stat-card">
           <div class="stat-value"><%= resolvedRequestsCount %></div>
           <div class="stat-label">Resolved</div>
           <a href="/admin/support?status=resolved" class="stat-link">View All</a>
         </div>
-        
+      </div>
+      
+      <div class="col-md-3">
         <div class="stat-card">
           <div class="stat-value"><%= customersCount %></div>
           <div class="stat-label">Customers</div>
           <a href="/admin/customers" class="stat-link">View All</a>
         </div>
       </div>
-      
-      <div class="dashboard-grid">
+    </div>
+    
+    <div class="dashboard-grid row">
+      <div class="col-md-6">
         <section class="dashboard-section">
           <div class="section-header">
             <h2>Today's Appointments</h2>
@@ -77,7 +87,9 @@
             <% } %>
           </div>
         </section>
-        
+      </div>
+      
+      <div class="col-md-6">
         <section class="dashboard-section">
           <div class="section-header">
             <h2>Low Stock Parts</h2>
@@ -92,7 +104,7 @@
             <% } else { %>
               <% lowStockParts.forEach(part => { %>
                 <div class="part-card low-stock">
-                  <h3><a href="/admin/parts/<%= part._id %>/edit"><%= part.name %></a></h3>
+                  <h3><%= part.name %></h3>
                   <div class="part-stock">
                     <span class="stock-label">Stock:</span>
                     <span class="stock-value"><%= part.stockQuantity %></span>
@@ -106,7 +118,11 @@
             <% } %>
           </div>
         </section>
-        
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="col-md-12">
         <section class="dashboard-section">
           <div class="section-header">
             <h2>Recent Support Requests</h2>
@@ -119,42 +135,58 @@
                 <p>No support requests available.</p>
               </div>
             <% } else { %>
-              <% recentRequests.forEach(request => { %>
-                <div class="support-request-card">
-                  <div class="request-status <%= request.status %>">
-                    <%= request.status.charAt(0).toUpperCase() + request.status.slice(1) %>
-                  </div>
-                  <h3><a href="/admin/support/<%= request._id %>"><%= request.title %></a></h3>
-                  <div class="customer-info">
-                    <% if (request.customer) { %>
-                      <span class="customer-name"><%= request.customer.firstName %> <%= request.customer.lastName %></span>
-                    <% } else { %>
-                      <span class="customer-name">Customer Deleted</span>
-                    <% } %>
-                  </div>
-                  <div class="request-meta">
-                    <span class="device-type"><%= request.deviceType %></span>
-                    <span class="urgency <%= request.urgency %>"><%= request.urgency %></span>
-                  </div>
-                  <div class="request-date">
-                    <%= new Date(request.createdAt).toLocaleDateString() %>
-                  </div>
-                </div>
-              <% }) %>
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Customer</th>
+                      <th>Title</th>
+                      <th>Status</th>
+                      <th>Urgency</th>
+                      <th>Created</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% recentRequests.forEach(request => { %>
+                      <tr>
+                        <td><code><%= request._id.toString().slice(-6) %></code></td>
+                        <td>
+                          <% if (request.customer) { %>
+                            <span class="customer-name"><%= request.customer.firstName %> <%= request.customer.lastName %></span>
+                          <% } else { %>
+                            <span class="customer-name">Customer Deleted</span>
+                          <% } %>
+                        </td>
+                        <td><%= request.title %></td>
+                        <td>
+                          <span class="badge badge-<%= request.status === 'resolved' ? 'success' : request.status === 'in-progress' ? 'warning' : 'info' %>">
+                            <%= request.status %>
+                          </span>
+                        </td>
+                        <td>
+                          <span class="badge badge-<%= request.urgency === 'high' ? 'danger' : request.urgency === 'medium' ? 'warning' : 'secondary' %>">
+                            <%= request.urgency %>
+                          </span>
+                        </td>
+                        <td><%= new Date(request.createdAt).toLocaleDateString() %></td>
+                        <td>
+                          <a href="/admin/support/<%= request._id %>" class="btn btn-sm btn-outline-primary">View</a>
+                        </td>
+                      </tr>
+                    <% }) %>
+                  </tbody>
+                </table>
+              </div>
             <% } %>
           </div>
         </section>
       </div>
-      
-      <div class="dashboard-actions" style="margin-top: 2rem;">
-        <a href="/admin/analytics" class="btn btn-primary">View Analytics</a>
-        <a href="/knowledge/admin" class="btn btn-secondary">Manage Knowledge Base</a>
-        <a href="/admin/parts" class="btn btn-secondary">Manage Inventory</a>
-      </div>
     </div>
-  </main>
+  </div>
   
-  <%- include('../partials/footer') %>
+  <%- include('../partials/admin-footer') %>
   
   <script src="/js/main.js"></script>
 </body>
