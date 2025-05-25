@@ -10,6 +10,13 @@ const userSchema = new mongoose.Schema(
       trim: true,
       lowercase: true,
     },
+    username: {
+      type: String,
+      unique: true,
+      sparse: true, // Allows null values to be non-unique
+      trim: true,
+      lowercase: true,
+    },
     password: {
       type: String,
       required: true,
@@ -53,6 +60,13 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    isEmailVerified: {
+      type: Boolean,
+      default: false,
+    },
+    lastLogin: {
+      type: Date,
+    },
     createdAt: {
       type: Date,
       default: Date.now,
@@ -66,7 +80,7 @@ userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next()
 
   try {
-    const salt = await bcrypt.genSalt(10)
+    const salt = await bcrypt.genSalt(12) // Increased salt rounds for better security
     this.password = await bcrypt.hash(this.password, salt)
     next()
   } catch (error) {
@@ -91,6 +105,17 @@ userSchema.methods.getRole = function () {
   if (this.isMaster) return "master"
   if (this.isAdmin) return "admin"
   return "customer"
+}
+
+// Method to get full name
+userSchema.methods.getFullName = function () {
+  return `${this.firstName} ${this.lastName}`.trim()
+}
+
+// Method to update last login
+userSchema.methods.updateLastLogin = function () {
+  this.lastLogin = new Date()
+  return this.save()
 }
 
 const User = mongoose.model("User", userSchema)

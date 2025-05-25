@@ -4,8 +4,12 @@ import User from "../models/User.js"
 import SupportRequest from "../models/SupportRequest.js"
 import SparePart from "../models/SparePart.js"
 import KnowledgeBase from "../models/KnowledgeBase.js"
-import { sendGuestApprovalNotification, sendGuestRejectionNotification } from '../utils/emailservice.js'
-
+import {
+  sendGuestApprovalNotification,
+  sendGuestRejectionNotification,
+  createAccountForGuest,
+  sendAccountCreationNotification,
+} from "../utils/emailService.js"
 
 const router = express.Router()
 
@@ -41,7 +45,7 @@ router.get("/dashboard", async (req, res) => {
     // Filter out requests with missing customers but keep the data
     const validSupportRequests = allSupportRequests.map((request) => ({
       ...request,
-      customer: request.customer || { firstName: "Deleted", lastName: "Customer", email: "N/A" },
+      customer: request.customer || { firstName: "Guest", lastName: "User", email: request.guestEmail || "N/A" },
     }))
 
     // Get requests pending master approval
@@ -175,7 +179,7 @@ router.get("/support/:id", async (req, res) => {
   }
 })
 
-// Master approval/rejection of support requests with email notifications
+// Master approval/rejection with automatic account creation and email notifications
 router.post("/support/:id/approve", async (req, res) => {
   try {
     const { action, masterSetPrice, masterComments, rejectionReason } = req.body
@@ -187,6 +191,11 @@ router.post("/support/:id/approve", async (req, res) => {
     }
 
     if (action === "approve") {
+      console.log("🔍 Processing approval for support request...")
+      console.log("Is guest request:", supportRequest.isGuestRequest)
+      console.log("Guest email:", supportRequest.guestEmail)
+
+      // Update support request status
       supportRequest.approvalStatus = "approved"
       supportRequest.masterApprovedBy = req.session.user
       supportRequest.masterApprovedAt = new Date()
@@ -194,14 +203,42 @@ router.post("/support/:id/approve", async (req, res) => {
       supportRequest.masterComments = masterComments
       supportRequest.status = "pending" // Move to pending for admin assignment
 
+      let accountInfo = null
+
+      // Create account for guest users
+      if (supportRequest.isGuestRequest && supportRequest.guestEmail) {
+        try {
+          console.log("🎯 Creating account for guest user...")
+          accountInfo = await createAccountForGuest(supportRequest)
+
+          if (accountInfo) {
+            console.log("✅ Account created successfully:", accountInfo.email)
+
+            // Send account creation notification
+            const accountEmailResult = await sendAccountCreationNotification(accountInfo, supportRequest)
+            if (accountEmailResult.success) {
+              console.log("✅ Account creation email sent successfully")
+            } else {
+              console.error("❌ Failed to send account creation email:", accountEmailResult.error)
+            }
+          } else {
+            console.log("ℹ️ Account not created (user already exists)")
+          }
+        } catch (accountError) {
+          console.error("❌ Error creating account:", accountError)
+          // Continue with approval even if account creation fails
+        }
+      }
+
       await supportRequest.save()
 
-      // Send email notification for guest requests
-      if (supportRequest.isGuestRequest) {
+      // Send approval notification
+      if (supportRequest.guestEmail || (supportRequest.customer && !supportRequest.isGuestRequest)) {
         try {
-          const emailResult = await sendGuestApprovalNotification(supportRequest)
+          console.log("📧 Sending approval notification...")
+          const emailResult = await sendGuestApprovalNotification(supportRequest, accountInfo)
           if (emailResult.success) {
-            console.log(`✅ Approval email sent to guest: ${supportRequest.guestEmail}`)
+            console.log(`✅ Approval email sent successfully`)
           } else {
             console.error(`❌ Failed to send approval email: ${emailResult.error}`)
           }
@@ -211,6 +248,8 @@ router.post("/support/:id/approve", async (req, res) => {
         }
       }
     } else if (action === "reject") {
+      console.log("🔍 Processing rejection for support request...")
+
       supportRequest.approvalStatus = "rejected"
       supportRequest.rejectionReason = rejectionReason
       supportRequest.masterComments = masterComments
@@ -218,18 +257,17 @@ router.post("/support/:id/approve", async (req, res) => {
 
       await supportRequest.save()
 
-      // Send email notification for guest requests
-      if (supportRequest.isGuestRequest) {
+      // Send rejection notification for guest requests
+      if (supportRequest.isGuestRequest && supportRequest.guestEmail) {
         try {
           const emailResult = await sendGuestRejectionNotification(supportRequest)
           if (emailResult.success) {
-            console.log(`✅ Rejection email sent to guest: ${supportRequest.guestEmail}`)
+            console.log(`✅ Rejection email sent to: ${supportRequest.guestEmail}`)
           } else {
             console.error(`❌ Failed to send rejection email: ${emailResult.error}`)
           }
         } catch (emailError) {
           console.error("Email notification error:", emailError)
-          // Don't fail the rejection process if email fails
         }
       }
     }
