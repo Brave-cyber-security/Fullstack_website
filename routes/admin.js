@@ -40,7 +40,7 @@ router.get("/dashboard", async (req, res) => {
       .sort({ createdAt: -1 })
       .limit(5)
       .populate("customer", "firstName lastName email")
-      .lean() // Use lean() for better performance
+      .lean()
 
     // Filter out requests with missing customers
     const validRecentRequests = recentRequests.filter((request) => request.customer)
@@ -53,6 +53,10 @@ router.get("/dashboard", async (req, res) => {
       lowStockParts,
       todayAppointments,
       recentRequests: validRecentRequests,
+      user: req.session.user,
+      isAdmin: true,
+      isMaster: false,
+      currentPage: "dashboard",
     })
   } catch (error) {
     console.error("Admin dashboard error:", error)
@@ -65,7 +69,14 @@ router.get("/customers", async (req, res) => {
   try {
     const customers = await User.find({ isAdmin: false }).sort({ createdAt: -1 })
 
-    res.render("admin/customers", { customers, viewOnly: true })
+    res.render("admin/customers", {
+      customers,
+      viewOnly: true,
+      user: req.session.user,
+      isAdmin: true,
+      isMaster: false,
+      currentPage: "customers",
+    })
   } catch (error) {
     console.error("Customer management error:", error)
     res.status(500).render("error", { error: "Error loading customers" })
@@ -84,7 +95,15 @@ router.get("/customers/:id", async (req, res) => {
     // Get customer's support requests
     const supportRequests = await SupportRequest.find({ customer: customer._id }).sort({ createdAt: -1 })
 
-    res.render("admin/customer-detail", { customer, supportRequests, viewOnly: true })
+    res.render("admin/customer-detail", {
+      customer,
+      supportRequests,
+      viewOnly: true,
+      user: req.session.user,
+      isAdmin: true,
+      isMaster: false,
+      currentPage: "customers",
+    })
   } catch (error) {
     console.error("View customer error:", error)
     res.status(500).render("error", { error: "Error loading customer details" })
@@ -119,6 +138,10 @@ router.get("/support", async (req, res) => {
       supportRequests,
       filters: { status, urgency, deviceType },
       viewOnly: true,
+      user: req.session.user,
+      isAdmin: true,
+      isMaster: false,
+      currentPage: "support",
     })
   } catch (error) {
     console.error("Support management error:", error)
@@ -126,7 +149,7 @@ router.get("/support", async (req, res) => {
   }
 })
 
-// View support request (READ ONLY - using master layout)
+// View support request (READ ONLY)
 router.get("/support/:id", async (req, res) => {
   try {
     const supportRequest = await SupportRequest.findById(req.params.id)
@@ -139,12 +162,13 @@ router.get("/support/:id", async (req, res) => {
       return res.status(404).render("error", { error: "Support request not found" })
     }
 
-    // Render using master layout for admin view
-    res.render("master/support-update-form", {
+    res.render("admin/support-detail", {
       supportRequest,
       viewOnly: true,
       isAdmin: true,
-      isMaster: req.session.isMaster || false,
+      isMaster: false,
+      user: req.session.user,
+      currentPage: "support",
     })
   } catch (error) {
     console.error("View support request error:", error)
@@ -174,6 +198,10 @@ router.get("/parts", async (req, res) => {
       spareParts,
       filters: { category, lowStock },
       viewOnly: true,
+      user: req.session.user,
+      isAdmin: true,
+      isMaster: false,
+      currentPage: "parts",
     })
   } catch (error) {
     console.error("Parts management error:", error)
@@ -236,6 +264,10 @@ router.get("/analytics", async (req, res) => {
       monthlyRequests,
       locations,
       viewOnly: true,
+      user: req.session.user,
+      isAdmin: true,
+      isMaster: false,
+      currentPage: "analytics",
     })
   } catch (error) {
     console.error("Analytics error:", error)

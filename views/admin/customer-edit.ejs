@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Customer - Dern-Support Admin</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <%- include('../partials/admin-header', { currentPage: 'customers' }) %>
+  
+  <div class="dashboard-content">
+    <div class="page-header">
+      <h1>Edit Customer</h1>
+      <a href="/admin/customers/<%= customer._id %>" class="btn btn-secondary btn-sm">Back to Customer</a>
+    </div>
+    
+    <div class="alert alert-warning" role="alert">
+      <strong>Access Restricted:</strong> Edit functionality is disabled for admin role. Contact a Master administrator to make changes.
+    </div>
+    
+    <div class="customer-edit-container">
+      <div class="card">
+        <div class="card-header">
+          <h3>Customer Information (View Only)</h3>
+        </div>
+        <div class="card-body">
+          <form class="customer-form">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="firstName">First Name</label>
+                  <input type="text" class="form-control" id="firstName" value="<%= customer.firstName %>" readonly>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="lastName">Last Name</label>
+                  <input type="text" class="form-control" id="lastName" value="<%= customer.lastName %>" readonly>
+                </div>
+              </div>
+            </div>
+            
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="email">Email</label>
+                  <input type="email" class="form-control" id="email" value="<%= customer.email %>" readonly>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="phone">Phone</label>
+                  <input type="text" class="form-control" id="phone" value="<%= customer.phone || '' %>" readonly>
+                </div>
+              </div>
+            </div>
+            
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="accountType">Account Type</label>
+                  <select class="form-control" id="accountType" disabled>
+                    <option value="personal" <%= customer.accountType === 'personal' ? 'selected' : '' %>>Personal</option>
+                    <option value="business" <%= customer.accountType === 'business' ? 'selected' : '' %>>Business</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="businessName">Business Name</label>
+                  <input type="text" class="form-control" id="businessName" value="<%= customer.businessName || '' %>" readonly>
+                </div>
+              </div>
+            </div>
+            
+            <% if (customer.address) { %>
+              <h4>Address Information</h4>
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <label for="street">Street Address</label>
+                    <input type="text" class="form-control" id="street" value="<%= customer.address.street || '' %>" readonly>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label for="city">City</label>
+                    <input type="text" class="form-control" id="city" value="<%= customer.address.city || '' %>" readonly>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label for="state">State</label>
+                    <input type="text" class="form-control" id="state" value="<%= customer.address.state || '' %>" readonly>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label for="zipCode">ZIP Code</label>
+                    <input type="text" class="form-control" id="zipCode" value="<%= customer.address.zipCode || '' %>" readonly>
+                  </div>
+                </div>
+              </div>
+            <% } %>
+            
+            <div class="form-actions">
+              <button type="button" class="btn btn-secondary" onclick="history.back()">Back</button>
+              <button type="button" class="btn btn-primary" disabled>Save Changes (Disabled)</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <%- include('../partials/admin-footer') %>
+  
+  <script src="/js/main.js"></script>
+</body>
+</html>
