@@ -194,6 +194,7 @@ router.post("/support/:id/approve", async (req, res) => {
       console.log("🔍 Processing approval for support request...")
       console.log("Is guest request:", supportRequest.isGuestRequest)
       console.log("Guest email:", supportRequest.guestEmail)
+      console.log("Support request ID:", supportRequest._id)
 
       // Update support request status
       supportRequest.approvalStatus = "approved"
@@ -201,7 +202,7 @@ router.post("/support/:id/approve", async (req, res) => {
       supportRequest.masterApprovedAt = new Date()
       supportRequest.masterSetPrice = masterSetPrice ? Number.parseFloat(masterSetPrice) : null
       supportRequest.masterComments = masterComments
-      supportRequest.status = "pending" // Move to pending for admin assignment
+      supportRequest.status = "pending"
 
       let accountInfo = null
 
@@ -209,43 +210,71 @@ router.post("/support/:id/approve", async (req, res) => {
       if (supportRequest.isGuestRequest && supportRequest.guestEmail) {
         try {
           console.log("🎯 Creating account for guest user...")
+          console.log("Guest email for account creation:", supportRequest.guestEmail)
+
           accountInfo = await createAccountForGuest(supportRequest)
 
           if (accountInfo) {
-            console.log("✅ Account created successfully:", accountInfo.email)
+            console.log("✅ Account created successfully:", {
+              email: accountInfo.email,
+              username: accountInfo.username,
+              userId: accountInfo.userId,
+            })
 
             // Send account creation notification
+            console.log("📧 Sending account creation notification...")
             const accountEmailResult = await sendAccountCreationNotification(accountInfo, supportRequest)
+
+            console.log("📧 Account creation email result:", accountEmailResult)
+
             if (accountEmailResult.success) {
               console.log("✅ Account creation email sent successfully")
             } else {
               console.error("❌ Failed to send account creation email:", accountEmailResult.error)
+              console.error("❌ Email error details:", accountEmailResult.details)
             }
           } else {
             console.log("ℹ️ Account not created (user already exists)")
           }
         } catch (accountError) {
           console.error("❌ Error creating account:", accountError)
-          // Continue with approval even if account creation fails
+          console.error("❌ Account creation stack trace:", accountError.stack)
         }
+      } else {
+        console.log("ℹ️ Skipping account creation - not a guest request or no email provided")
       }
 
       await supportRequest.save()
+      console.log("✅ Support request saved with approval status")
 
       // Send approval notification
-      if (supportRequest.guestEmail || (supportRequest.customer && !supportRequest.isGuestRequest)) {
+      const emailTarget = supportRequest.guestEmail || supportRequest.customer?.email
+      console.log("📧 Email target determined:", emailTarget)
+
+      if (emailTarget) {
         try {
-          console.log("📧 Sending approval notification...")
+          console.log("📧 Sending approval notification to:", emailTarget)
+          console.log("📧 Account info for approval email:", accountInfo ? "Provided" : "Not provided")
+
           const emailResult = await sendGuestApprovalNotification(supportRequest, accountInfo)
+
+          console.log("📧 Approval email result:", emailResult)
+
           if (emailResult.success) {
-            console.log(`✅ Approval email sent successfully`)
+            console.log(`✅ Approval email sent successfully to ${emailTarget}`)
+            console.log(`✅ Message ID: ${emailResult.messageId}`)
           } else {
             console.error(`❌ Failed to send approval email: ${emailResult.error}`)
+            console.error(`❌ Email error details:`, emailResult.details)
           }
         } catch (emailError) {
-          console.error("Email notification error:", emailError)
-          // Don't fail the approval process if email fails
+          console.error("❌ Email notification error:", emailError)
+          console.error("❌ Email error stack trace:", emailError.stack)
         }
+      } else {
+        console.log("❌ No email target found - cannot send notification")
+        console.log("❌ Guest email:", supportRequest.guestEmail)
+        console.log("❌ Customer email:", supportRequest.customer?.email)
       }
     } else if (action === "reject") {
       console.log("🔍 Processing rejection for support request...")

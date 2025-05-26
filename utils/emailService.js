@@ -1,21 +1,54 @@
 import nodemailer from "nodemailer"
 import crypto from "crypto"
 
+// Add debug logging function
+const debugLog = (message, data = null) => {
+  console.log(`🔍 [EMAIL DEBUG] ${message}`)
+  if (data) {
+    console.log("📊 [EMAIL DATA]", JSON.stringify(data, null, 2))
+  }
+}
+
+// Add environment validation
+const validateEnvironment = () => {
+  const required = ["SMTP_USER", "SMTP_PASS"]
+  const missing = required.filter((key) => !process.env[key])
+
+  if (missing.length > 0) {
+    console.error("❌ Missing required environment variables:", missing)
+    return false
+  }
+
+  console.log("✅ All required environment variables are set")
+  return true
+}
+
 // Create Gmail transporter (more reliable than manual SMTP)
 const createTransporter = () => {
-  console.log("📧 Creating Gmail transporter...")
-  console.log("SMTP_USER:", process.env.SMTP_USER)
-  console.log("SMTP_PASS:", process.env.SMTP_PASS ? "***configured***" : "NOT SET")
+  debugLog("Creating Gmail transporter...")
 
-  return nodemailer.createTransporter({
+  if (!validateEnvironment()) {
+    throw new Error("Missing required environment variables for email service")
+  }
+
+  debugLog("SMTP Configuration", {
+    user: process.env.SMTP_USER,
+    passSet: !!process.env.SMTP_PASS,
+    service: "gmail",
+  })
+
+  const config = {
     service: "gmail",
     auth: {
-      user: 'begzad10.09@gmail.com',
-      pass: 'gaim idvq itpv qnia', // Gmail App Password
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
     },
-    debug: process.env.NODE_ENV === "development",
-    logger: process.env.NODE_ENV === "development",
-  })
+    debug: true,
+    logger: true,
+  }
+
+  debugLog("Creating transporter with config", config)
+  return nodemailer.createTransporter(config)
 }
 
 // Secure password generation
@@ -270,6 +303,65 @@ Login: ${process.env.FRONTEND_URL || "http://localhost:3000"}/login
     `,
   }),
 
+  requestRejected: (supportRequest) => ({
+    subject: `❌ Support Request #${supportRequest._id.toString().slice(-8)} Rejected`,
+    html: `
+      <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background: linear-gradient(135deg, #dc3545, #c82333); color: white; padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
+          <h1 style="margin: 0; font-size: 28px;">❌ Request Rejected</h1>
+          <p style="margin: 15px 0 0 0; font-size: 16px; opacity: 0.9;">Unfortunately, your support request has been rejected</p>
+        </div>
+        
+        <div style="background: white; padding: 30px; border-radius: 0 0 12px 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+          <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+            <h2 style="color: #333; margin-top: 0;">Request Details</h2>
+            <p><strong>Request ID:</strong> #${supportRequest._id.toString().slice(-8)}</p>
+            <p><strong>Title:</strong> ${supportRequest.title}</p>
+            <p><strong>Device Type:</strong> ${supportRequest.deviceType}</p>
+            <p><strong>Urgency:</strong> ${supportRequest.urgency}</p>
+            ${supportRequest.rejectionReason ? `<p><strong>Rejection Reason:</strong> ${supportRequest.rejectionReason}</p>` : ""}
+            ${supportRequest.masterComments ? `<p><strong>Comments:</strong> ${supportRequest.masterComments}</p>` : ""}
+          </div>
+          
+          <div style="background: #f8d7da; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #dc3545;">
+            <h3 style="color: #721c24; margin-top: 0;">What's Next?</h3>
+            <ul style="color: #721c24; margin: 0; padding-left: 20px; line-height: 1.6;">
+              <li>Review the rejection reason above</li>
+              <li>Contact our support team for clarification</li>
+              <li>Submit a new request with additional information</li>
+              <li>Consider alternative solutions from our knowledge base</li>
+            </ul>
+          </div>
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${process.env.FRONTEND_URL || "http://localhost:3000"}/guest-support" 
+               style="background: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block; margin-right: 10px;">
+              Submit New Request
+            </a>
+            <a href="mailto:support@dern-support.com" 
+               style="background: #28a745; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;">
+              Contact Support
+            </a>
+          </div>
+        </div>
+      </div>
+    `,
+    text: `
+Support Request #${supportRequest._id.toString().slice(-8)} Rejected
+
+Request Details:
+- Title: ${supportRequest.title}
+- Device Type: ${supportRequest.deviceType}
+- Urgency: ${supportRequest.urgency}
+${supportRequest.rejectionReason ? `- Rejection Reason: ${supportRequest.rejectionReason}` : ""}
+
+What's Next?
+1. Review the rejection reason
+2. Contact support: support@dern-support.com
+3. Submit new request: ${process.env.FRONTEND_URL || "http://localhost:3000"}/guest-support
+    `,
+  }),
+
   testEmail: () => ({
     subject: "🧪 Dern Support - Email Test",
     html: `
@@ -288,26 +380,74 @@ Login: ${process.env.FRONTEND_URL || "http://localhost:3000"}/login
 // Main email sending function
 export const sendEmail = async (to, template, data, accountInfo = null) => {
   try {
-    console.log(`📧 Sending email to: ${to}`)
-    console.log(`📧 Template: ${template}`)
+    debugLog(`Starting email send process`)
+    debugLog(`Recipient: ${to}`)
+    debugLog(`Template: ${template}`)
+    debugLog(`Data provided:`, data)
+    debugLog(`Account info provided:`, accountInfo ? "Yes" : "No")
+
+    if (!to) {
+      throw new Error("No recipient email address provided")
+    }
+
+    if (!emailTemplates[template]) {
+      throw new Error(`Email template '${template}' not found`)
+    }
 
     const transporter = createTransporter()
+    debugLog("Transporter created successfully")
+
     const emailContent = emailTemplates[template](data, accountInfo)
+    debugLog("Email content generated", {
+      subject: emailContent.subject,
+      hasHtml: !!emailContent.html,
+      hasText: !!emailContent.text,
+    })
 
     const mailOptions = {
       from: `"Dern Support" <${process.env.SMTP_USER}>`,
-      to: 'nadirovabdulhaq1@gmail.com',
+      to: to,
       subject: emailContent.subject,
       text: emailContent.text,
       html: emailContent.html,
     }
 
+    debugLog("Mail options prepared", mailOptions)
+
+    debugLog("Attempting to send email...")
     const result = await transporter.sendMail(mailOptions)
-    console.log("✅ Email sent successfully:", result.messageId)
-    return { success: true, messageId: result.messageId, response: result.response }
+
+    debugLog("Email sent successfully!", {
+      messageId: result.messageId,
+      response: result.response,
+      accepted: result.accepted,
+      rejected: result.rejected,
+    })
+
+    return {
+      success: true,
+      messageId: result.messageId,
+      response: result.response,
+      accepted: result.accepted,
+      rejected: result.rejected,
+    }
   } catch (error) {
-    console.error("❌ Email sending failed:", error)
-    return { success: false, error: error.message, details: error }
+    debugLog("Email sending failed with error:", {
+      message: error.message,
+      code: error.code,
+      command: error.command,
+      stack: error.stack,
+    })
+
+    return {
+      success: false,
+      error: error.message,
+      details: {
+        code: error.code,
+        command: error.command,
+        responseCode: error.responseCode,
+      },
+    }
   }
 }
 
@@ -415,6 +555,15 @@ export const sendGuestApprovalNotification = async (supportRequest, accountInfo 
   }
 
   console.log("❌ No email address provided")
+  return { success: false, error: "No email address provided" }
+}
+
+// Send request rejection notification
+export const sendGuestRejectionNotification = async (supportRequest) => {
+  console.log("📧 Sending rejection notification...")
+  if (supportRequest.guestEmail) {
+    return await sendEmail(supportRequest.guestEmail, "requestRejected", supportRequest)
+  }
   return { success: false, error: "No email address provided" }
 }
 
